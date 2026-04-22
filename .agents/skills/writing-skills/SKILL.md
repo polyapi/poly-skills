@@ -95,6 +95,16 @@ skills/
 When this skill is being used inside the `poly-skills` repository, skill
 authoring work includes keeping the repo index and browse docs current.
 
+Within this repo, keep these roles distinct:
+
+- `<pack>/AGENTS.md` is a pack-level repo-entrypoint template intended to be
+  copied to the root of a target repo.
+- `<pack>/specialised_agents/*.md` are task-specific playbooks, not the
+  default repo entrypoint.
+- `.agents/skills/` is only for skills and internal maintainer guidance.
+- Do not move repo-entrypoint `AGENTS.md` files or specialised playbooks into
+  `.agents/skills/`.
+
 After adding, removing, renaming, moving, or materially redefining a skill:
 - Update `CATALOG.md`
 - Update the root `README.md` if the public taxonomy or browse entry points changed

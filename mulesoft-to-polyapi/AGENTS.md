@@ -26,8 +26,8 @@ belong in the task-specific agent files and skills.
 
 1. This `AGENTS.md` for shared pack-wide rules
 2. Task-specific agent files
-   - `MULE_ARCHITECT.md` for MuleSoft analysis
-   - `POLYAPI_CODEAGENT.md` for PolyAPI migration and implementation
+   - `specialised_agents/MULE_ARCHITECT.md` for MuleSoft analysis
+   - `specialised_agents/POLYAPI_CODEAGENT.md` for PolyAPI migration and implementation
 3. Relevant pack skills under `../skills/`
 4. Shared PolyAPI skills under:
    - `../../polyapi-common/skills/`
@@ -55,14 +55,15 @@ behaviour more faithfully.
   dependencies, and XML boundaries must be documented or implemented
   explicitly.
 - Keep task-specific workflow rules out of this file. Put them in
-  `MULE_ARCHITECT.md`, `POLYAPI_CODEAGENT.md`, or the relevant skill.
+  `specialised_agents/MULE_ARCHITECT.md`,
+  `specialised_agents/POLYAPI_CODEAGENT.md`, or the relevant skill.
 
 ## Task Entry Points
 
-- Use `MULE_ARCHITECT.md` when the task is Mule analysis or migration-ready
-  documentation.
-- Use `POLYAPI_CODEAGENT.md` when the task is PolyAPI design validation,
-  migration planning, or implementation.
+- Use `specialised_agents/MULE_ARCHITECT.md` when the task is Mule analysis or
+  migration-ready documentation.
+- Use `specialised_agents/POLYAPI_CODEAGENT.md` when the task is PolyAPI
+  design validation, migration planning, or implementation.
 - Use `README.md` for pack setup, local dependencies, and skill-script
   prerequisites.
 - Use `../skills/*/SKILL.md` for Mule-specific extraction, compression, and
@@ -73,17 +74,12 @@ behaviour more faithfully.
 
 ## Security Constraints
 
-- Never read or access `.env`, `.env.*`, or any file containing secrets or
-  credentials
-- Never access files with extensions like `.key`, `.pem`, `.p12`, `.pfx`,
-  `.crt`
-- Only operate within explicitly allowed project directories such as `/src` or
-  `/tests`
-- Do not execute arbitrary shell commands unless the task explicitly permits
-  them
+- Never read or access `.env`, `.env.*`, or any file containing secrets or credentials
+- Never access files with extensions like `.key`, `.pem`, `.p12`, `.pfx`, `.crt`
+- Only operate within explicitly allowed project directories (e.g. `/src`, `/tests`)
+- Do not execute arbitrary shell commands, only use an approved allowlist if provided
 - No outbound network calls unless explicitly approved
-- Do not access external secret managers such as 1Password, AWS, or GCP
+- Do not access external secret managers (e.g. 1Password, AWS, GCP)
 - Never send secrets or sensitive data to the LLM under any circumstance
-- Require human approval before modifying CI/CD, dependencies, or reading
-  config files when the active task requires that control
+- Require human approval before modifying CI/CD, dependencies, or reading config files
 - Do not persist or store any sensitive data beyond the current session

@@ -203,7 +203,7 @@ export async function run(data: any): Promise<any> {
 
 ```text
 src/
-├── module/
+├── workflow/
 │   ├── client/
 │   ├── server/
 │   ├── types/
