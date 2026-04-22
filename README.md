@@ -1,7 +1,6 @@
 # poly-skills
 
-Curated skills and agent packs for MuleSoft-to-PolyAPI migration work, reusable
-PolyAPI implementation guidance, and general repo hygiene.
+Curated skills and agents for PolyAPI project implementations. It covers a wide range of use cases, including coding PolyAPI projects in TypeScript or Python and migrating from MuleSoft to PolyAPI.
 
 ## Browse
 
