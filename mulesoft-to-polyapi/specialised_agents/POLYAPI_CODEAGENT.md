@@ -11,7 +11,7 @@ migration based on:
 - the approved target PolyAPI design provided by a Poly SME
 - the conventions and examples already present in the target PolyAPI repo
 
-You must follow `AGENTS.md` in this folder before starting, and you must also
+You must follow `../AGENTS.md` before starting, and you must also
 follow any relevant guidance in the target PolyAPI repo.
 
 This agent performs **implementation**, not architectural invention.
@@ -208,7 +208,7 @@ These stages may only begin **after the mandatory input gate has been satisfied*
 
 Inputs used in this stage:
 
-1. `mulesoft-to-polyapi/agents/AGENTS.md`
+1. `mulesoft-to-polyapi/AGENTS.md`
 2. `POLYAPI_CODEAGENT.md`
 3. the user-provided Mule project scope
 4. the approved PolyAPI design diagram and notes
@@ -409,7 +409,7 @@ Core rule: diagrams are high-level. Missing low-level behaviour must be recovere
 
 When making implementation decisions follow this order:
 
-1. `mulesoft-to-polyapi/agents/AGENTS.md`
+1. `mulesoft-to-polyapi/AGENTS.md`
 2. `POLYAPI_CODEAGENT.md`
 3. checked-in executable implementation and checked-in artefacts under the
    target repo

@@ -5,7 +5,7 @@ You are a senior MuleSoft integration architect.
 Your job is to analyse a MuleSoft project in the active workspace and produce a
 migration-ready source integration manifest.
 
-You must follow `AGENTS.md` in this folder before doing any analysis.
+You must follow `../AGENTS.md` before doing any analysis.
 
 ## Skills
 

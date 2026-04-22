@@ -14,6 +14,8 @@ src/<workflow_name>/
   tests/
     test_<name>.py
   artefacts/
+    canopy/
+      <name>.json
     webhooks/
       <name>_hook.json
     triggers/
@@ -46,6 +48,8 @@ src/utilities/<utility_name>/
   tests/
     test_<name>.py
   artefacts/
+    canopy/
+      <name>.json
     vari/
       <name>_vari.json
     jobs/
@@ -59,6 +63,27 @@ src/utilities/<utility_name>/
   scripts/
     <one_off_task>.py
 ```
+
+## Authoritative schema source
+
+Use `https://eu1.polyapi.io/swagger-json` as the source of truth for the JSON
+body shape of platform-managed artefacts. The checked-in repo conventions tell
+you where files live and how names align; the swagger tells you which fields
+the platform accepts.
+
+| Folder | Swagger resource | Create DTO |
+| --- | --- | --- |
+| `webhooks/` | `/webhooks` | `CreateWebhookHandleDto` |
+| `triggers/` | `/triggers` | `CreateTriggerDto` |
+| `vari/` | `/variables` | `CreateVariableDto` |
+| `schemas/` | `/schemas` | `CreateSchemaDto` |
+| `jobs/` | `/jobs` | `CreateJobDto` |
+| `tabi/` | `/tables` | `CreateTableDto` |
+
+Notes:
+- The platform API names the `tabi` resource `tables`.
+- `canopy/` is not exposed under the same name in `swagger-json`; follow
+  checked-in repo examples or separate Canopy guidance for that artefact type.
 
 ## Webhook artefact
 
@@ -153,6 +178,11 @@ src/utilities/<utility_name>/
   "rows": []
 }
 ```
+
+## Canopy artefact
+
+Treat `artefacts/canopy/` as optional. Use it only when the target repo checks
+in Canopy UI definitions alongside the rest of the workflow artefacts.
 
 ## Shared placement guidance
 
