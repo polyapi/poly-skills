@@ -27,9 +27,9 @@ project facts live under `./.agents/skills/*/references/REFERENCE.md`.
 ## Repo-Wide Rules
 
 - Inspect JSON/config first for collection UI behavior.
-- For collection-backed features, inspect both
-  `polyapi_config/collections/<collection>/collection.json` and the sibling
-  `api.json`.
+- For collection-backed features, list `polyapi_config/collections/`, choose
+  the folder matching the URL segment, then inspect that folder's
+  `collection.json` and `api.json` when present.
 - Prefer config changes before React/TypeScript changes when the behavior is
   intended to be collection-driven.
 - Reuse existing config patterns, shared components, helper functions, and data
@@ -92,20 +92,12 @@ PolyAPI config:
 - `polyapi_config/collections/<collection>/collection.json` - UI-facing
   collection config. `<collection>` is the folder name and matches the
   collection segment in URLs like
-  `/<appId>/collections/<collection>/<itemId>/...`. There are many
-  collection folders in this repo and they are all equally important — pick
-  the one(s) that match the URL or feature you are working on. Current
-  collection folders include: `access-logs`, `activities`, `api-functions`,
-  `api-keys`, `applications`, `auth-providers`, `client-functions`,
-  `environments`, `graphql-subscriptions`, `helpful-links`,
-  `identity-providers`, `jobs`, `permission-policies`,
-  `public-api-functions`, `public-client-functions`,
-  `public-server-functions`, `public-webhooks`, `saved-requests`, `schemas`,
-  `server-functions`, `snippets`, `tables`, `tenant`, `triggers`, `users`,
-  `variables`, `webhooks`. Always re-list the directory; the set evolves.
-- `polyapi_config/collections/<collection>/api.json` - PolyAPI function/gateway
-  contract for that same collection. Read it together with the sibling
-  `collection.json`.
+  `/<appId>/collections/<collection>/<itemId>/...`. There are many collection
+  folders and they are all equally important; always re-list the directory and
+  pick the one(s) matching the URL or feature.
+- `polyapi_config/collections/<collection>/api.json` - optional PolyAPI
+  function/gateway contract for that same collection. Read it with
+  `collection.json` when it exists; some collections are config-only.
 - `polyapi_config/collections/all_collections.js` - deployed collection list
   and sidebar ordering.
 - `polyapi_config/collections/autogen_apis.js` - autogen collection list paired

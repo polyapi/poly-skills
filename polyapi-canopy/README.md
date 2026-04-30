@@ -53,8 +53,11 @@ Copy each full skill folder, including its `references/` directory.
 ## Main Themes
 
 - Canopy is a Next.js/React shell rendered from PolyAPI application config.
-- Collection work is usually config-first: inspect `collection.json` and
-  `api.json` before changing React code.
+- Collection work is usually config-first: folder names under
+  `polyapi_config/collections/` map to URL segments like
+  `/<appId>/collections/<collection>/...`; list the directory and inspect the
+  matching `collection.json` plus `api.json` when present before changing
+  React code.
 - Runtime request construction matters as much as config. Optional empty filter
   values must often be omitted, not sent as empty strings.
 - Auth, access logs, roles, visibility, tenant boundaries, MFA, and API key
