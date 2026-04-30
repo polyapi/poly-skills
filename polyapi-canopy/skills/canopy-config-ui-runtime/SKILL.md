@@ -7,8 +7,7 @@ description: Use when changing Canopy collection config, filters, fields, action
 
 ## Overview
 
-Canopy UI is config-driven, but config is only one layer. Collection behavior
-usually depends on:
+Canopy UI is config-driven, but collection behavior spans:
 
 - `collection.json` for UI mapping and rendering.
 - `api.json` for PolyAPI function/gateway contract.
@@ -20,8 +19,8 @@ usually depends on:
   routes.
 - Generic collection/action React components for display and interaction.
 
-It also covers execute-function, trigger-webhook, configured forms
-(`src/app/[appId]/forms/[formId]`), and collection execution flows.
+Also covers execute-function, trigger-webhook, configured forms
+(`src/app/[appId]/forms/[formId]`), and collection execution.
 
 ## Quick Rules
 
@@ -40,8 +39,7 @@ It also covers execute-function, trigger-webhook, configured forms
   supports it.
 - Keep generic route TSX files generic.
 - For larger, logic-heavy, or data-heavy UI additions, extract child components
-  as render boundaries and lazy-load details when selection or expansion needs
-  them.
+  as render boundaries and lazy-load details when selected or expanded.
 - Use `src/api/poly/function.ts` as the canonical execution reference before
   copying inline `collection.ts` switch blocks.
 - For raw functions with MFA, route MFA through the raw header path as well as
@@ -74,8 +72,8 @@ It also covers execute-function, trigger-webhook, configured forms
 - Changing `ActionBarMenu` delete behavior during unrelated action work.
 - Copying `collection.ts` raw execution blocks without checking
   `executeFunction`.
-- Eager-loading detail data for every row/item when only selected or expanded
-  UI needs it.
+- Eager-loading detail data for every row/item instead of selected/expanded
+  details.
 - Adding `React.memo`, `useMemo`, or `useCallback` as style instead of need.
 
 ## Reference
