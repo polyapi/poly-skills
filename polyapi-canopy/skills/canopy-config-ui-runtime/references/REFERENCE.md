@@ -2,18 +2,20 @@
 
 ## Collection Config vs API Config
 
-Every feature that lives under `/<appId>/collections/<collection>/...` is
-backed by `polyapi_config/collections/<collection>/collection.json` and an
-optional sibling `api.json`. The folder name equals the URL segment, e.g.
-`/polyui/collections/server-functions/<id>/execute-server-function` is
-backed by `polyapi_config/collections/server-functions/`. There are many
-collection folders (api-functions, server-functions, client-functions,
-webhooks, triggers, tables, schemas, applications, environments, users,
-api-keys, variables, auth-providers, identity-providers, permission-policies,
-access-logs, activities, jobs, snippets, saved-requests, tenant,
-graphql-subscriptions, helpful-links, plus the `public-*` and
-`autogen_apis` variants). Always identify the right one(s) for the URL or
-feature you are changing instead of assuming a single canonical pair.
+Every feature that lives under `/<appId>/collections/<collection>/...` maps to
+`polyapi_config/collections/<collection>/`. The folder name equals the URL
+segment, e.g. `/polyui/collections/server-functions/<id>/execute-server-function`
+is backed by `polyapi_config/collections/server-functions/`.
+
+There are many collection folders, such as `access-logs`, `api-functions`,
+`api-keys`, `applications`, `client-functions`, `helpful-links`,
+`server-functions`, `tables`, `users`, `variables`, and `webhooks`. Always
+list `polyapi_config/collections/` and identify the right folder for the URL or
+feature instead of assuming a single canonical collection pair.
+
+Every collection has `collection.json`. Many, but not all, collections also
+have a sibling `api.json`; for example, config-only collections may only have
+`collection.json`.
 
 `collection.json` controls:
 
@@ -31,7 +33,8 @@ feature you are changing instead of assuming a single canonical pair.
 - visibility and validation
 - `removeIfNotPresentOnExecute`
 
-Read both before debugging collection behavior.
+Read `collection.json` and, when present, `api.json` before debugging
+collection behavior.
 
 ## Optional Filters and Params
 
@@ -123,6 +126,10 @@ Extract a named child component when:
 - only part of the page should re-render
 - the parent becomes hard to reason about
 
+Lazy-load detail data when it is only needed after a user selects, expands, or
+opens part of the UI. Avoid N+1 eager loading across all rows, variables,
+collections, or nested items when the default view only needs summaries or IDs.
+
 Use memoization only for real cost, stable child props, or dependency
 correctness. Do not add `React.memo`, `useMemo`, or `useCallback` everywhere by
 default.
@@ -181,14 +188,10 @@ MFA token rule:
 
 Execute-page current contract:
 
-- `POLY_VARIABLE_NAME_PREFIX = "PolyVariable::"`.
-- `getBody` emits `{ type: "PolyVariable", id }` for variable fields.
-- Current branch does not contain a checked-in `PolyVariablePath::` prefix.
+If adding nested path support consider:
 
-If adding nested variable path support:
-
-- gate the path UI to object-like variable values
+- gate the path UI to object-like values
 - preserve the user-entered path unless normalization is requested
-- lazy-load selected variable details instead of N+1 loading all variables
+- lazy-load selected details instead of N+1 loading all data
 - keep UI field names and parser behavior synchronized
 

@@ -25,11 +25,10 @@ It also covers execute-function, trigger-webhook, configured forms
 
 ## Quick Rules
 
-- Inspect `collection.json` and sibling `api.json` together for the
-  collection that matches the URL segment
-  (`/<appId>/collections/<collection>/...`). All collection folders under
-  `polyapi_config/collections/` are equally important; list the directory and
-  pick the right one(s).
+- List `polyapi_config/collections/` and pick the folder matching the URL
+  segment (`/<appId>/collections/<collection>/...`). Inspect its
+  `collection.json` and `api.json` when present; some collections are
+  config-only.
 - Prefer config changes before React changes when supported.
 - Do not copy fields between similar config surfaces without checking schema
   validity.
@@ -40,8 +39,9 @@ It also covers execute-function, trigger-webhook, configured forms
 - Keep action placement/visibility config-driven when the generic action system
   supports it.
 - Keep generic route TSX files generic.
-- For larger or logic-heavy UI additions, extract child components as render
-  boundaries.
+- For larger, logic-heavy, or data-heavy UI additions, extract child components
+  as render boundaries and lazy-load details when selection or expansion needs
+  them.
 - Use `src/api/poly/function.ts` as the canonical execution reference before
   copying inline `collection.ts` switch blocks.
 - For raw functions with MFA, route MFA through the raw header path as well as
@@ -51,7 +51,8 @@ It also covers execute-function, trigger-webhook, configured forms
 
 1. Locate the relevant directory under `polyapi_config/collections`.
 2. Read `collection.json` for UI properties, filters, actions, and mapping.
-3. Read `api.json` for gateway URL, arguments, validation, and omission rules.
+3. If present, read `api.json` for gateway URL, arguments, validation, and
+  omission rules.
 4. If the issue involves runtime values, inspect `getExecutionBody` and function
    dispatch in `src/api/poly/function.ts`.
 5. If the issue involves list/get/create/update/delete, inspect the relevant
@@ -73,6 +74,8 @@ It also covers execute-function, trigger-webhook, configured forms
 - Changing `ActionBarMenu` delete behavior during unrelated action work.
 - Copying `collection.ts` raw execution blocks without checking
   `executeFunction`.
+- Eager-loading detail data for every row/item when only selected or expanded
+  UI needs it.
 - Adding `React.memo`, `useMemo`, or `useCallback` as style instead of need.
 
 ## Reference

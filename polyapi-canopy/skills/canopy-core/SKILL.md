@@ -19,12 +19,10 @@ local [reference](./references/REFERENCE.md).
 ## Quick Rules
 
 - Follow checked-in implementation before older notes, README, or framework guesses.
-- Inspect `polyapi_config/collections/<collection>/collection.json` and the
-  sibling `api.json` for collection-backed work. `<collection>` is the folder
-  name and matches the URL segment
-  (`/<appId>/collections/<collection>/...`). All collection folders under
-  `polyapi_config/collections/` are equally important — list the directory
-  and pick the one(s) that match the URL or feature.
+- List `polyapi_config/collections/` for collection-backed work. The folder
+  name is the URL segment (`/<appId>/collections/<collection>/...`); inspect
+  the matching `collection.json` and `api.json` when present. Some collections
+  are config-only.
 - Prefer config changes before React/TypeScript changes when config is the
   intended source of truth.
 - Keep generic collection pages generic; avoid hardcoded collection/action logic
