@@ -11,6 +11,12 @@ project facts live under `./.agents/skills/*/references/REFERENCE.md`.
 - Applies to PolyAPI application config under `polyapi_config/`.
 - Applies to collection config, generated/config artifacts, auth/session work,
   access logs, function execution, role-gated UI, and deployment.
+- This pack targets the Canopy UI repository layout (a Next.js app with `src/`
+  and `polyapi_config/`). It does not apply to PolyAPI workflow repositories
+  that use the `workflows/src/<workflowName>/` template layout.
+- In PolyAPI workflow repositories, store Canopy UI artefacts under
+  `workflows/src/<workflowName-or-utilities>/artefacts/canopy/` alongside the
+  rest of the workflow artefacts.
 - Does not replace checked-in implementation. If this pack conflicts with code,
   follow the code and document the drift.
 
