@@ -3,14 +3,21 @@
 Canopy-specific guidance for future agents working on Canopy UI and
 PolyAPI-backed Canopy features.
 
+This pack targets the Canopy UI repository layout (a Next.js app with `src/`
+and `polyapi_config/`). It is not a PolyAPI workflow template pack.
+
+If you are working in a PolyAPI workflow repo (the `workflows/src/<workflow>/`
+layout), Canopy UI artefacts belong under
+`workflows/src/<workflowName-or-utilities>/artefacts/canopy/`.
+
 ## Installed Files
 
 - [AGENTS.md](./AGENTS.md) - repo-wide Canopy agent rules
-- [.agents/skills/canopy-core/SKILL.md](./.agents/skills/canopy-core/SKILL.md) -
-  architecture, source map, workflow, deployment
-- [.agents/skills/canopy-config-ui-runtime/SKILL.md](./.agents/skills/canopy-config-ui-runtime/SKILL.md) -
+- [skills/canopy-core/SKILL.md](./skills/canopy-core/SKILL.md) - architecture,
+  source map, workflow, deployment
+- [skills/canopy-config-ui-runtime/SKILL.md](./skills/canopy-config-ui-runtime/SKILL.md) -
   collection config, rendering, actions, filters, execution
-- [.agents/skills/canopy-security-auth/SKILL.md](./.agents/skills/canopy-security-auth/SKILL.md) -
+- [skills/canopy-security-auth/SKILL.md](./skills/canopy-security-auth/SKILL.md) -
   auth, access logs, roles, permissions, MFA, API keys
 
 Each skill has a local `references/REFERENCE.md` beside its `SKILL.md` with the
@@ -18,7 +25,8 @@ project-specific file map, source-of-truth notes, and common traps.
 
 ## Skill Layout
 
-This repo expects skills under `./.agents/skills/`:
+When installed into a target Canopy UI repository, copy each skill folder into
+`./.agents/skills/` (including its `references/` directory):
 
 ```text
 AGENTS.md
