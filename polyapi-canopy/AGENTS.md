@@ -11,7 +11,7 @@ project facts live under `./.agents/skills/*/references/REFERENCE.md`.
 - Applies to PolyAPI application config under `polyapi_config/`.
 - Applies to collection config, generated/config artifacts, auth/session work,
   access logs, function execution, role-gated UI, and deployment.
-- This pack targets the Canopy UI repository layout (a Next.js app with `src/`
+- This pack targets the Canopy UI repository layout (an app with `src/`
   and `polyapi_config/`). It does not apply to PolyAPI workflow repositories
   that use the `workflows/src/<workflowName>/` template layout.
 - In PolyAPI workflow repositories, store Canopy UI artefacts under
@@ -76,15 +76,11 @@ API config changes.
 
 ## Task Entry Points
 
-- Use `./.agents/skills/canopy-core/SKILL.md` when onboarding, mapping source
-  ownership, planning cross-layer Canopy work, or checking PolyUI config
-  deployment requirements.
-- Use `./.agents/skills/canopy-config-ui-runtime/SKILL.md` before changing
-  collection config, filters, fields, actions, generic UI rendering,
-  execute-function pages, collection CRUD, or runtime request mapping.
-- Use `./.agents/skills/canopy-security-auth/SKILL.md` before changing auth,
-  sessions, access logs, roles, permissions, visibility, MFA, API keys, tenant
-  isolation, or other security-sensitive UI/runtime behavior.
+- Use `./.agents/skills/canopy-ui/SKILL.md` when the task is authoring or
+  debugging a customer-owned Canopy application via Application JSON
+  (collections, forms, actions, prepare/submit lifecycle, argument mapping to
+  PolyAPI functions, variables, or deploying the config to a Poly environment
+  via PolyUI).
 - If installed, use `./.agents/skills/design-analysis/SKILL.md` as soon as a
   target PolyAPI design is provided.
 - If installed, use `./.agents/skills/markdownlint-compliance/SKILL.md` when

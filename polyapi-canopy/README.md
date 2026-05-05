@@ -1,89 +1,106 @@
 # polyapi-canopy
 
-Canopy-specific guidance for future agents working on Canopy UI and
-PolyAPI-backed Canopy features.
+Guidance for agents and customers who are building a Canopy application
+through an Application JSON.
 
-This pack targets the Canopy UI repository layout (a Next.js app with `src/`
-and `polyapi_config/`). It is not a PolyAPI workflow template pack.
+This pack is for authoring, reviewing, and debugging customer-facing Canopy
+apps: collections, forms, actions, argument mapping, login/sign-up flows,
+variables, and deployment to a Poly tenant. It is not a guide for developing
+the Canopy runtime itself. It is not a PolyAPI workflow template pack.
 
 If you are working in a PolyAPI workflow repo (the `workflows/src/<workflow>/`
 layout), Canopy UI artefacts belong under
 `workflows/src/<workflowName-or-utilities>/artefacts/canopy/`.
 
+## What This Pack Is For
+
+Use this pack when you need to:
+
+- design a new Canopy app for a customer
+- extend an existing Canopy app by editing its Application JSON
+- debug why a collection, form, or action is not behaving as expected
+- verify that Application JSON matches real Canopy runtime behavior
+- guide a customer through deployment in PolyUI
+
 ## Installed Files
 
-- [AGENTS.md](./AGENTS.md) - repo-wide Canopy agent rules
-- [skills/canopy-core/SKILL.md](./skills/canopy-core/SKILL.md) - architecture,
-  source map, workflow, deployment
-- [skills/canopy-config-ui-runtime/SKILL.md](./skills/canopy-config-ui-runtime/SKILL.md) -
-  collection config, rendering, actions, filters, execution
-- [skills/canopy-security-auth/SKILL.md](./skills/canopy-security-auth/SKILL.md) -
-  auth, access logs, roles, permissions, MFA, API keys
-
-Each skill has a local `references/REFERENCE.md` beside its `SKILL.md` with the
-project-specific file map, source-of-truth notes, and common traps.
+- [AGENTS.md](./AGENTS.md) - high-level rules for agents working on Canopy app authoring tasks
+- [skills/canopy-ui/SKILL.md](./skills/canopy-ui/SKILL.md) - the main customer-facing authoring guide for Application JSON
 
 ## Skill Layout
 
-When installed into a target Canopy UI repository, copy each skill folder into
-`./.agents/skills/` (including its `references/` directory):
+When installed into a target Canopy UI repository, copy the skill folder into
+`./.agents/skills/`:
 
 ```text
 AGENTS.md
 README.md
 .agents/
   skills/
-    canopy-core/
+    canopy-ui/
       SKILL.md
-      references/REFERENCE.md
-    canopy-config-ui-runtime/
-      SKILL.md
-      references/REFERENCE.md
-    canopy-security-auth/
-      SKILL.md
-      references/REFERENCE.md
 ```
 
-Copy each full skill folder, including its `references/` directory.
+Copy the full `canopy-ui` skill folder.
 
-## Task Entry Points
+## Where To Start
 
-- Use `./.agents/skills/canopy-core/SKILL.md` when onboarding, mapping source
-  ownership, planning cross-layer Canopy work, or checking PolyUI config
-  deployment requirements.
-- Use `./.agents/skills/canopy-config-ui-runtime/SKILL.md` before changing
-  collection config, filters, fields, actions, generic UI rendering,
-  execute-function pages, collection CRUD, or runtime request mapping.
-- Use `./.agents/skills/canopy-security-auth/SKILL.md` before changing auth,
-  sessions, access logs, roles, permissions, visibility, MFA, API keys, tenant
-  isolation, or other security-sensitive UI/runtime behavior.
+For almost all tasks, start with [skills/canopy-ui/SKILL.md](./skills/canopy-ui/SKILL.md).
 
-## Main Themes
+That skill covers the main authoring surface:
 
-- Canopy is a Next.js/React shell rendered from PolyAPI application config.
-- Collection work is usually config-first: folder names under
-  `polyapi_config/collections/` map to URL segments like
-  `/<appId>/collections/<collection>/...`; list the directory and inspect the
-  matching `collection.json` plus `api.json` when present before changing
-  React code.
-- Runtime request construction matters as much as config. Optional empty filter
-  values must often be omitted, not sent as empty strings.
-- Auth, access logs, roles, visibility, tenant boundaries, MFA, and API key
-  behavior are security-sensitive.
-- Generic collection pages and action bars should stay generic; collection
-  behavior belongs in JSON when supported.
-- Larger or logic-heavy UI blocks should be extracted into child components as
-  render boundaries, with memoization used only when justified.
-- Any merged `collection.json` or associated `api.json` change requires the
-  manual PolyUI config deployment workflow for `develop`.
+- app structure and navigation
+- collections, item pages, and standalone forms
+- prepare and submit lifecycle
+- argument mapping to PolyAPI functions
+- filters driven by `queryParam`
+- response config, redirect behavior, and templating
+- variables, secrecy, MFA, and PolyUI deployment
+
+## Recommended Workflow
+
+When helping a customer or authoring an app yourself, use this order:
+
+1. Confirm the business flow the app needs to support.
+2. Confirm which Poly resources already exist in the tenant: functions,
+   variables, identity providers, tables, schemas, webhooks.
+3. Shape the Application JSON around the user journey: collections, forms,
+   actions, and routes.
+4. Validate that each function call has the right argument mapping.
+5. Check whether query params, defaults, redirects, and response views match
+   the intended UX.
+6. Deploy through PolyUI, unless the project explicitly uses a checked-in app
+   config plus a documented deployment workflow.
+
+## What Matters Most
+
+- Canopy is config-driven. Most customer app work should happen in the
+  Application JSON, not by changing the runtime.
+- The most common source of mistakes is not layout but data flow: wrong
+  function paths, wrong argument names, wrong query param keys, or wrong
+  response shape.
+- Security-sensitive behavior still matters in customer apps: API keys,
+  MFA-protected actions, tenant scoping, role-gated fields, and secret-backed
+  variables should be treated carefully.
+- Customers usually deploy via PolyUI. Workflow-based deployment can exist in a
+  repo, but it should be treated as project-specific, not as the default.
+
+## Keep It Customer-Facing
+
+Prefer guidance that helps a customer or agent ship a working app:
+
+- explain what JSON to write
+- explain what runtime behavior to expect
+- explain what must already exist in PolyUI
+- explain how to validate and deploy the app
+
+Avoid adding details that are mainly about Canopy internals unless they are
+needed to explain observable app behavior.
 
 ## Use With
 
-When available, also install these shared skills into the target repo's
-`./.agents/skills/` directory:
+When available, these related skills are useful alongside this pack:
 
-- `design-analysis` from `polyapi-common`
-- `markdownlint-compliance` from `common`
-
-Those skills provide broader PolyAPI platform and Markdown guidance. This pack
-adds Canopy-specific UI, config, auth, deployment, and workflow rules.
+- `design-analysis` from `polyapi-common` for turning business requirements
+  into a concrete Canopy app structure
+- `markdownlint-compliance` from `common` when editing Markdown docs
