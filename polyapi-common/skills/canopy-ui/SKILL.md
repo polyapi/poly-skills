@@ -1,6 +1,6 @@
 ---
 name: canopy-ui
-description: Use when authoring or debugging a Canopy application JSON for a customer Poly tenant — defining collections, forms, actions, prepare/submit lifecycle, argument mapping to PolyAPI functions, or deploying the application config to a Poly environment.
+description: Use when authoring or debugging Canopy Application JSON in PolyUI or in a PolyAPI workflow repo that checks in UI artefacts under `artefacts/canopy/` alongside `server/` functions.
 ---
 
 # Canopy UI (Customer Authoring)
@@ -16,6 +16,38 @@ Configured Collection → Item Detail → Item Sub-page / Item Sub-collection �
 Sub-item Detail**. Every dynamic value at runtime resolves to a PolyAPI
 function, webhook, table, or variable that already exists in the same tenant
 and environment.
+
+## Scope
+
+This skill applies when:
+
+- You are **authoring or debugging a customer Canopy Application JSON** deployed via **PolyUI**.
+- You are working in a **PolyAPI workflow repo** that checks in Canopy UI artefacts under an `artefacts/canopy/` directory.
+
+It does **not** replace checked-in implementation. If this skill conflicts with the target repo’s code or artefacts, follow the checked-in implementation and call out the drift.
+
+## Repo Layout (PolyAPI workflow repos)
+
+In the workflow template used by these packs, a workflow (or utility) is typically laid out like:
+
+- `.../src/<workflow-or-utility>/artefacts/canopy/` — Canopy Application JSON and related UI artefacts
+- `.../src/<workflow-or-utility>/server/` — server functions that implement the backend behavior the Canopy app calls
+- `.../src/<workflow-or-utility>/client/` — client utilities used by server functions (when applicable)
+- `.../src/<workflow-or-utility>/artefacts/webhooks/`, `triggers/`, `schemas/`, `vari/`, `tabi/` — the deployed PolyAPI artefacts the UI ultimately depends on
+
+Some repos wrap workflows under `workflows/src/...` rather than `src/...`. Use the repo’s existing layout as the source of truth; the key invariant is that `artefacts/canopy/` sits alongside the workflow’s `server/` code.
+
+## Alignment Rule (Canopy UI ↔ backend)
+
+The Application JSON only **references** PolyAPI resources; it does not create them.
+
+So when you add or change something in Canopy that calls a function:
+
+- Ensure the referenced server function exists (or is created in the same PR).
+- Ensure the function’s argument names and expected shape match what the Canopy JSON sends.
+- If the change affects contracts, keep the relevant schemas/webhooks/triggers updated so deployed behavior stays aligned.
+
+If you’re not sure where a concept belongs (Canopy vs webhook/trigger/schema), load `polyapi-constructs` and the relevant language pack’s `artefacts-usage` skill.
 
 ## Prerequisites — set up in PolyUI first
 
