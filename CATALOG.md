@@ -10,8 +10,8 @@
 | `mulesoft-to-polyapi` | Skill | `generate-schemas` | Generate JSON Schemas and optional Python helper classes from RAML |
 | `polyapi-common` | Skill | `design-analysis` | Interpret PolyAPI design diagrams |
 | `polyapi-common` | Skill | `generate-overview` | Refresh same-folder `OVERVIEW.md` files |
-| `polyapi-canopy` | Guide | `AGENTS.md` | Generalized root agent guide for Canopy UI repos |
-| `polyapi-canopy` | Skill | `canopy-ui` | Customer-facing Canopy app authoring through Application JSON: collections, forms, actions, argument mapping, and deployment via PolyUI |
+| `polyapi-common` | Skill | `polyapi-constructs` | Language-agnostic definitions and decision rules for PolyAPI constructs (schemas, webhooks, triggers, functions, jobs, vari, tabi, canopy) |
+| `polyapi-common` | Skill | `canopy-ui` | Customer-facing Canopy app authoring through Application JSON: collections, forms, actions, argument mapping, and deployment via PolyUI |
 | `polyapi-python` | Guide | `AGENTS.md` | Generalized root agent guide for PolyAPI Python repos |
 | `polyapi-python` | Skill | `polyapi-sdk` | Python SDK and typing quirks |
 | `polyapi-python` | Skill | `coding-conventions` | Python naming and file-layout conventions |

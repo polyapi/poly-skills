@@ -8,8 +8,6 @@ Curated skills and agents for PolyAPI project implementations. It covers a wide 
   migration pack
 - [polyapi-common](./polyapi-common/README.md): shared PolyAPI design and repo
   guidance
-- [polyapi-canopy](./polyapi-canopy/README.md): Canopy UI and
-  PolyAPI-backed configuration skills
 - [polyapi-python](./polyapi-python/README.md): Python-specific PolyAPI skills
 - [polyapi-typescript](./polyapi-typescript/README.md): TypeScript-specific
   PolyAPI skills
@@ -75,6 +73,9 @@ These are the highest-signal gaps based on real PolyAPI workflow repos such as
 
 - `canopy-ui-creation`: guidance for creating and maintaining Canopy UI flows
   and related artefacts
+
+Baseline construct definitions live under `polyapi-common/skills/polyapi-constructs/`.
+
 - `tabi`: advanced skill on how to create and use tabi's
 - `vari-and-tabi-patterns`: when to model data in vari vs tabi, how to handle
   secrets vs config vs cache, and how jobs fit around retention and cleanup
