@@ -146,14 +146,40 @@ finally:
 
 | What | When | Level |
 | --- | --- | --- |
-| Input payloads | Complex payloads or branching behaviour | DEBUG |
-| Response payloads | Outcome requires body detail | DEBUG |
-| Success outcomes | State-changing calls need completion evidence | INFO |
-| Error outcomes | Any failed operation or unexpected condition | ERROR |
-| Retries | Transient failure triggers a retry | WARN |
-| Mapping and decision logic | Conditional logic affects mapping | DEBUG |
-| Performance and timing | Integration latency measurement | INFO |
-| Final workflow outcome | Completion of integration workflow | INFO |
+| Workflow started or finished | Operator needs to follow a production timeline | INFO |
+| Success or skip outcome | State-changing or branch outcome needs completion evidence | INFO |
+| Final workflow counters | Completion of an integration workflow | INFO |
+| Performance timing | Integration latency measurement | INFO |
+| Input request payload | Payload drives external call or branching behaviour | DEBUG |
+| Response payload | Outcome requires body detail | DEBUG |
+| Mapping or decision logic | Conditional logic affects mapping or action | DEBUG |
+| Extracted candidates | Engineers must validate duplicate detection, matching, or filtering | DEBUG |
+| Retryable failure | Transient failure triggers retry handling | WARN |
+| Terminal or unexpected failure | Failed operation or unexpected condition, with sanitized request/response payloads when available | ERROR |
+| Transport internals | HTTP client connection noise with no business value | Suppress |
+
+### INFO vs DEBUG boundary
+
+INFO logs are the high-volume operator timeline. Keep them compact and focused
+on what happened, where it happened, the business entity involved, the
+success/failure outcome, counters, and elapsed duration. Avoid full URLs,
+headers, request bodies, response bodies, payload fragments, credential
+diagnostics, and low-level transport details at INFO.
+
+DEBUG logs are for human troubleshooting. They should be payload-centric:
+include the outbound request payload, the inbound response payload, the exact
+records evaluated, the selected record, rules or thresholds, and the final
+decision reason when those details explain why the workflow acted.
+
+ERROR logs should also be troubleshooting-ready. When a failed operation has an
+available request payload, upstream response body, upstream status, retry
+decision, or parsed error payload, include the sanitized useful parts directly
+on the ERROR log. Avoid metadata-only errors when the payload is needed to
+understand why the operation failed.
+
+Prefer fewer rich DEBUG entries over many metadata-only entries. Do not log
+only derived booleans or counts when the actual compact payload is needed to
+replay or validate the decision.
 
 ### Log format
 
@@ -168,5 +194,36 @@ call_logger["error"]("Downstream call failed", {"error": str(error), "url": url}
 
 - Always log before returning an error result.
 - Do not log secrets, tokens, or passwords at any level.
-- Use DEBUG payload logging only when the integration has materially complex conditional behaviour.
+- Mask credential-like keys such as `token`, `authorization`, `appKey`,
+  `api_key`, `password`, and `secret` before logging payloads.
+- Cap very large strings and lists before they reach Datadog or the shared log
+  sink.
+- Use DEBUG payload logging when the integration has materially complex
+  conditional behaviour, matching, duplicate detection, or external payload
+  construction.
+- Keep DEBUG payloads business-focused. Do not include low-level HTTP transport
+  internals unless they are the bug being investigated.
+- For ERROR logs, include sanitized request/response payloads whenever they
+  materially help troubleshoot and are available in the current scope. If the
+  full payload is too large, include a compacted version plus the exact status,
+  operation name, and retry decision.
 - If the repo uses alerting on fatal boundary paths, preserve that alert call before returning.
+
+### Payload-shape and decision logging checklist
+
+When adding or refactoring workflow logging:
+
+1. Identify the workflow milestones that belong at INFO.
+2. Define stable correlation fields before adding log calls.
+3. Log request and response payloads at DEBUG for external boundaries.
+4. Log extracted candidates and selected records at DEBUG for matching,
+   duplicate detection, or filtering.
+5. Log the rules, thresholds, and reason for important branch decisions.
+6. Avoid generic field-name guessing helpers. Use the exact SDK type,
+   checked-in implementation contract, or known upstream payload shape.
+7. If the expected shape is absent, fail clearly or return the local controlled
+   integration error instead of silently falling back to another shape.
+8. Suppress noisy third-party loggers such as HTTP transport libraries when
+   they pollute workflow logs.
+9. Add or update tests for exact payload paths and important structured log
+   fields when logs are part of the debugging contract.

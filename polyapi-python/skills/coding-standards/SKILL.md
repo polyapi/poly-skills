@@ -34,7 +34,22 @@ behavior-changing work is done under `src/<workflow_name>/` or
 - At the top-level boundary, log unexpected failures and convert them into the repo's established error payload and status behaviour.
 - Preserve repo-specific alerting or status-setting side effects that existing sibling code already uses.
 - Do not log secrets, tokens, or passwords.
-- Use DEBUG payload logging only when the payload materially affects branching behaviour.
+- Keep INFO logs to operational milestones, outcomes, counters, and elapsed
+  timing. Do not put request bodies, response bodies, headers, URLs, or
+  transport internals in INFO logs.
+- Use DEBUG logs for payload-first troubleshooting when payloads materially
+  affect branching behaviour, external interactions, mapping, or decisions.
+- Include sanitized request and response payloads in ERROR logs when those
+  payloads are available and materially help troubleshoot the failure. Prefer
+  the exact outbound request payload, useful upstream response body, upstream
+  status, and retry decision over metadata-only errors.
+- Prefer fewer, richer DEBUG logs over many fragmented metadata-only logs.
+- Do not replace useful request/response payloads with derived field spam.
+- Suppress or raise the level of noisy third-party transport loggers when they
+  pollute workflow logs.
+- Do not create generic data-shape helpers that guess alternative field names.
+  Use the exact checked-in implementation contract, SDK type, or known upstream
+  payload shape; fail clearly when that shape is absent.
 - After behavior-changing edits under `src/<workflow_name>/`, create or refresh
   that folder's `OVERVIEW.md`.
 - After behavior-changing edits under `src/utilities/<utility_name>/`, create
@@ -50,6 +65,12 @@ behavior-changing work is done under `src/<workflow_name>/` or
 - Error return shape is repo-specific. Copy the nearest sibling workflow or utility instead of inventing a new global envelope.
 - If the repo sets HTTP status metadata separately from the returned payload, set that metadata before returning.
 - Use the repo's shared structured logger interface and prefer a message plus context dict where supported.
+- For externally observable workflows, define the operator timeline first:
+  started, finished, skipped, posted, retryable failure, terminal failure, and
+  final counters. Keep those INFO entries compact.
+- At DEBUG, log the business payloads needed to replay or validate decisions:
+  outbound request, inbound response, extracted candidates, selected records,
+  rules or thresholds, and the final decision reason.
 - Treat overview freshness as part of the implementation boundary: if behavior
   changed, the same-folder overview must reflect the new behavior before the
   task is complete.
