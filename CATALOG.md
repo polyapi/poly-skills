@@ -22,8 +22,8 @@
 | `polyapi-typescript` | Skill | `coding-conventions` | TypeScript PolyAPI conventions |
 | `polyapi-typescript` | Skill | `artefacts-usage` | TypeScript artefact structure and placement |
 | `polyapi-typescript` | Skill | `coding-standards` | TypeScript implementation standards |
-| `common` | Skill | `markdownlint-compliance` | Markdown authoring rules |
-| `common` | Skill | `clean-code` | General engineering reference |
+| `general` | Skill | `markdownlint-compliance` | Markdown authoring rules |
+| `general` | Skill | `clean-code` | General engineering reference |
 
 Internal maintainer guidance lives under `.agents/skills/` and is not part of
 the public catalog.
