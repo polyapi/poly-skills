@@ -120,9 +120,14 @@ await paymentsClient.capture(input);
 
 ### Do not re-cast platform APIs
 
-- Do not use `as unknown as { ... }` to redefine the shape of `poly.*`
-- Preserve platform typings when they already exist
-- If a tiny local type is needed around a boundary, keep it local to the file
+- Do not use `as unknown as { ... }` or local compatibility aliases to
+  redefine the shape of `poly.*` or `vari.*`
+- Call generated `poly.*` functions and `vari.*` paths directly and
+  deterministically
+- If generated SDK typings are stale, run the repo's SDK generation path
+  instead of papering over the mismatch with casts
+- Only use local types for real input/output domain data, not to reshape
+  platform namespaces
 
 ### Boundary rule
 

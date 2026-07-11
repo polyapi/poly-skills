@@ -11,8 +11,9 @@ Before changing runtime code or deployment flow, inspect the active repo for:
 - existing `polyapi` dependency version
 - neighboring tests that prove the expected calling pattern
 
-In `maybourne/workflows`, those signals come from `package.json`, workflow
-structure under `src/`, and neighboring `*.test.ts` files.
+In a typical PolyAPI TypeScript workspace, those signals come from
+`package.json`, workflow structure under `src/` or `workflows/src/`, and
+neighboring `*.test.ts` files.
 
 ## Imports
 
@@ -38,7 +39,7 @@ Many TypeScript PolyAPI repos keep function metadata inline:
 ```typescript
 const polyConfig: PolyServerFunction = {
   name: 'routePaymentEvent',
-  context: 'maybourne.members.orchestration',
+  context: 'platform.payments.orchestration',
   description: 'Routes incoming payment events to the correct handler',
 };
 ```
@@ -57,8 +58,8 @@ typed with the generated contract:
 
 ```typescript
 export default async function routePaymentEvent(
-  input: schemas.Maybourne.Members.Pbl.AuthEventInput
-): Promise<schemas.Maybourne.Members.Pbl.AuthEventOutput> {
+  input: schemas.Platform.Payments.WebhookInput
+): Promise<schemas.Platform.Payments.WebhookOutput> {
   // ...
 }
 ```
@@ -81,7 +82,7 @@ Do not scatter status mutation through internal helpers.
 
 Use the repo’s existing command path instead of inventing a new one.
 
-In `maybourne/workflows`, the package scripts show a workspace-managed flow:
+For example, a workspace-managed repo might expose scripts like:
 
 ```bash
 pnpm install
@@ -99,6 +100,8 @@ is:
 ## Review Checklist
 
 - Are imports coming directly from `polyapi`?
+- Are `poly.*` and `vari.*` references called through generated namespaces
+  directly, without `as unknown as` casts or local platform aliases?
 - Does the entrypoint use generated platform types where available?
 - Does metadata stay aligned with deployed context and trigger wiring?
 - Did the change follow the repo’s existing build or sync path?

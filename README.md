@@ -67,9 +67,9 @@ poly-skills/mulesoft-to-polyapi/specialised_agents/POLYAPI_CODEAGENT.md
 
 Missing skills. Volunteers welcome.
 
-These are the highest-signal gaps based on real PolyAPI workflow repos such as
-`/Users/luisweir/Code/poly/maybourne/workflows`, especially for bringing
-`polyapi-python` closer to the day-to-day patterns used in production.
+These are the highest-signal gaps based on real production PolyAPI workflow
+repos, especially for bringing `polyapi-python` closer to the day-to-day
+patterns used in production.
 
 - `canopy-ui-creation`: guidance for creating and maintaining Canopy UI flows
   and related artefacts

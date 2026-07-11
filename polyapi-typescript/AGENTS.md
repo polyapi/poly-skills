@@ -15,13 +15,14 @@ skills.
 
 ## Source of Truth
 
-1. This `AGENTS.md` for shared repo-wide rules
+1. Direct user instructions, unless they conflict with execution permissions.
 2. Checked-in executable implementation and checked-in artefacts under `src/`
    or `workflows/src/`
-3. Relevant local skills under `./.agents/skills/`
-4. `CONVENTIONS.md`
-5. `README.md`
-6. Other repo docs such as `OVERVIEW.md`
+3. Repo-local skills under `./.agents/skills/`
+4. This `AGENTS.md` for shared repo-wide rules
+5. `CONVENTIONS.md`
+6. `README.md`
+7. Other repo docs such as `OVERVIEW.md`
 
 If docs or skills conflict with the checked-in executable implementation or
 artefacts, follow the checked-in implementation and raise the drift clearly.
@@ -30,7 +31,9 @@ context only unless they match maintained checked-in patterns.
 
 ## Workflow Model
 
-- PolyAPI runtime flow is: schemas -> webhooks -> triggers -> functions.
+- PolyAPI runtime flow is usually schemas, webhooks, triggers, and functions.
+  GraphQL subscriptions, jobs, `vari`, `tabi`, and Canopy artefacts may also
+  participate depending on the repo.
 - Keep one workflow per `src/<workflow>/` or `workflows/src/<workflow>/`
   folder, depending on the repo layout.
 - TypeScript repos commonly keep `artifacts/`, `client/`, `server/`, and
@@ -52,6 +55,19 @@ context only unless they match maintained checked-in patterns.
 - Do not loosen schemas or introduce generic catch-all endpoints just to make a
   migration pass.
 - Never commit or expose secret values. Record secret names only.
+
+## PolyAPI SDK Rules
+
+- Call generated `poly.*` functions directly through the SDK namespace.
+- Call generated `vari.*` paths directly through the SDK namespace.
+- Do not use `as unknown as` or local compatibility aliases to reshape
+  `poly.*` or `vari.*`.
+- If generated SDK types are stale, run the repo's SDK generation command
+  instead of casting around the mismatch.
+- Prefer generated `schemas.*` and `tabi.*` types when they represent the
+  platform contract.
+- Keep function metadata aligned with deployed function names, contexts, and
+  trigger or subscription wiring.
 
 ## Environment and Tooling
 
@@ -101,12 +117,13 @@ context only unless they match maintained checked-in patterns.
 
 ## Security Constraints
 
-- Never read or access `.env`, `.env.*`, or any file containing secrets or credentials
-- Never access files with extensions like `.key`, `.pem`, `.p12`, `.pfx`, `.crt`
-- Only operate within explicitly allowed project directories (e.g. `/src`, `/tests`)
-- Do not execute arbitrary shell commands, only use an approved allowlist if provided
-- No outbound network calls unless explicitly approved
-- Do not access external secret managers (e.g. 1Password, AWS, GCP)
-- Never send secrets or sensitive data to the LLM under any circumstance
-- Require human approval before modifying CI/CD, dependencies, or reading config files
-- Do not persist or store any sensitive data beyond the current session
+- Never print, quote, or persist secret values.
+- Env files and config files may be inspected only when needed for the task;
+  report variable names and non-secret configuration, not secret contents.
+- Do not access external secret managers unless the user explicitly asks and
+  the active environment permits it.
+- Do not execute release, deploy, publish, or remote-changing commands unless
+  the user explicitly asks and the target repo rules allow it.
+- Treat dry-run, build, type-check, and test commands as validation when the
+  target repo documents them as safe.
+- Do not commit or push unless the user explicitly asks.
