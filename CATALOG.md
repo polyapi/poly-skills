@@ -19,6 +19,7 @@
 | `polyapi-python` | Skill | `coding-standards` | Python logging and error-handling rules |
 | `polyapi-typescript` | Guide | `AGENTS.md` | Generalized root agent guide for PolyAPI TypeScript repos |
 | `polyapi-typescript` | Skill | `polyapi-sdk` | TypeScript PolyAPI runtime and sync rules |
+| `polyapi-typescript` | Skill | `polyapi-runtime-testing` | TypeScript deployed-function integration testing and log verification |
 | `polyapi-typescript` | Skill | `coding-conventions` | TypeScript PolyAPI conventions |
 | `polyapi-typescript` | Skill | `artefacts-usage` | TypeScript artefact structure and placement |
 | `polyapi-typescript` | Skill | `coding-standards` | TypeScript implementation standards |

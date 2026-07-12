@@ -39,6 +39,13 @@ Do not use this skill:
 - Use `polyCustom.responseStatusCode` only at explicit webhook boundaries that
   intentionally control the returned HTTP status.
 - Use the repo’s existing package manager, build step, and sync or push command.
+- Treat PolyAPI as platform-first: generated paths for functions, `vari`,
+  `tabi`, schemas, webhooks, triggers, subscriptions, jobs, and other
+  constructs exist only after the artefact is deployed and the SDK is
+  regenerated.
+- When a generated path is missing, ask for approval to deploy the artefact to
+  a non-production environment and regenerate the SDK instead of adding local
+  typing workarounds.
 - After changing TypeScript or artifacts, run the repo’s sync path and relevant
   tests before finishing.
 - Treat the pinned `polyapi` package version as infrastructure. Upgrade it
@@ -58,5 +65,7 @@ for artifact layout and wiring.
 - Changing function name or context in code without updating the matching
   artifacts
 - Forgetting the repo’s build step before sync or push in workspace setups
+- Adding `.d.ts` shims, `@ts-expect-error`, `as unknown as`, or untyped access
+  to bypass missing generated SDK paths
 - Upgrading `polyapi` or changing sync commands without checking how the active
   repo is wired

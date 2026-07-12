@@ -28,6 +28,8 @@ Do not use this skill:
 
 - Keep one readable main function per file
 - Call `poly.*` directly; do not shadow or re-cast platform namespaces
+- Deploy missing platform constructs and regenerate the SDK before referencing
+  new generated paths
 - Use `schemas.*` directly when it already represents the contract
 - Treat `poly.*`, `vari.*`, env, files, HTTP, and webhook payloads as
   boundaries
@@ -45,6 +47,8 @@ override this generalized reference.
 
 - Hiding platform calls behind generic wrappers
 - Introducing alias chains for types that already exist
+- Using local `.d.ts` shims, `@ts-expect-error`, or `as unknown as` to bypass
+  generated SDK drift
 - Normalising trusted `vari.*` values without a contract reason
 - Updating TypeScript without the matching artifact or test changes
 

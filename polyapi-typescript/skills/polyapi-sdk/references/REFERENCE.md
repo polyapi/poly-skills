@@ -97,11 +97,32 @@ is:
 2. Run it after TypeScript or artifact changes.
 3. Run the nearest targeted tests before finishing.
 
+## Platform-First SDK Generation
+
+Generated SDK paths are not local declarations. They reflect platform state.
+This applies to functions, `vari`, `tabi`, schemas, webhooks, triggers,
+subscriptions, jobs, and other generated PolyAPI constructs.
+
+When code needs a new generated path:
+
+1. Create or update the checked-in artefact.
+2. Ask for explicit approval for the exact non-production deploy command.
+3. Deploy the artefact with the approved `ENVPATH`.
+4. Regenerate the SDK from the same PolyAPI environment.
+5. Use the generated `poly.*`, `vari.*`, `tabi.*`, or `schemas.*` path
+   directly in code.
+
+Do not paper over missing SDK state with local `.d.ts` shims,
+`@ts-expect-error`, `as unknown as`, namespace aliases, or untyped property
+access.
+
 ## Review Checklist
 
 - Are imports coming directly from `polyapi`?
 - Are `poly.*` and `vari.*` references called through generated namespaces
   directly, without `as unknown as` casts or local platform aliases?
+- If a generated path was missing, was the artefact deployed and SDK
+  regenerated instead of bypassing the type system?
 - Does the entrypoint use generated platform types where available?
 - Does metadata stay aligned with deployed context and trigger wiring?
 - Did the change follow the repo’s existing build or sync path?

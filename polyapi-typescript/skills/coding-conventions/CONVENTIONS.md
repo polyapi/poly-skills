@@ -124,8 +124,9 @@ await paymentsClient.capture(input);
   redefine the shape of `poly.*` or `vari.*`
 - Call generated `poly.*` functions and `vari.*` paths directly and
   deterministically
-- If generated SDK typings are stale, run the repo's SDK generation path
-  instead of papering over the mismatch with casts
+- If generated SDK typings are stale or a path does not exist, deploy the
+  matching artefact to an approved non-production environment and run the
+  repo's SDK generation path instead of papering over the mismatch with casts
 - Only use local types for real input/output domain data, not to reshape
   platform namespaces
 

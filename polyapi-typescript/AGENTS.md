@@ -86,6 +86,9 @@ context only unless they match maintained checked-in patterns.
   workflow layout or JSON artefacts.
 - Use `./.agents/skills/polyapi-sdk/SKILL.md` before writing, syncing, or
   deploying PolyAPI TypeScript code.
+- Use `./.agents/skills/polyapi-runtime-testing/SKILL.md` before writing,
+  reviewing, or debugging tests that invoke deployed PolyAPI functions or need
+  server-function log verification.
 - Use `./.agents/skills/coding-standards/SKILL.md` before writing logging or
   error handling, and when behaviour-changing work requires `OVERVIEW.md`
   updates.
