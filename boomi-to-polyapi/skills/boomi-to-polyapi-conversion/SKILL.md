@@ -19,6 +19,20 @@ Load this skill before:
 This skill orchestrates dependent skills. Keep rules in their source skills and
 load them at the indicated stage.
 
+## Boomi Migration Constraints
+
+These constraints apply across every step of this skill, from analysis through
+implementation:
+
+-   Preserve Boomi-derived request and response payload shapes unless a
+    contract change is explicitly approved.
+-   Preserve Boomi-derived status codes and trigger styles unless explicitly
+    approved.
+-   Do not introduce response wrapper keys unless Boomi payloads already
+    include those wrapper keys.
+-   For secret variables, keep identity and secrecy metadata only; never
+    commit secret values.
+
 ## Step 1 - Mandatory Input Gate
 
 Required inputs:
@@ -79,8 +93,8 @@ Before playback, load planning skills:
 -   `polyapi-common/skills/design-analysis/SKILL.md`
 -   `polyapi-common/skills/polyapi-constructs/SKILL.md`
 -   `polyapi-typescript/skills/artefacts-usage/SKILL.md`
--   `polyapi-typescript/skills/coding-conventions/SKILL.md`
--   `polyapi-typescript/skills/coding-standards/SKILL.md`
+-   `boomi-to-polyapi/skills/naming-conventions-boomi/SKILL.md`
+-   `boomi-to-polyapi/skills/generate-schemas-boomi/SKILL.md`
 
 Use `design-analysis` to interpret the approved design diagram and notes
 before source-derived planning. Compare design intent against confirmed Boomi
@@ -287,6 +301,8 @@ Load shared implementation skills before writing files:
 -   `polyapi-typescript/skills/coding-conventions/SKILL.md`
 -   `polyapi-typescript/skills/coding-standards/SKILL.md`
 -   `polyapi-typescript/skills/artefacts-usage/SKILL.md`
+-   `boomi-to-polyapi/skills/generate-schemas-boomi/SKILL.md`
+-   `boomi-to-polyapi/skills/naming-conventions-boomi/SKILL.md`
 -   `polyapi-common/skills/polyapi-constructs/SKILL.md`
 
 Preserve exact Boomi behavior unless a change is explicitly approved.

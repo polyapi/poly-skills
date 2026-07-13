@@ -22,8 +22,8 @@ Load skills at stage boundaries to keep context focused.
 | `polyapi-common/skills/design-analysis/SKILL.md`               | Stage 1 - as soon as an approved design is provided      |
 | `polyapi-typescript/skills/coding-conventions/SKILL.md`        | Stage 1 - before naming, layout, and plan playback       |
 | `polyapi-typescript/skills/artefacts-usage/SKILL.md`           | Stage 1 - before artifact file planning or edits         |
-| `polyapi-common/skills/polyapi-constructs/SKILL.md`            | Stage 1 - when deriving request or response schemas      |
-| `polyapi-typescript/skills/coding-conventions/SKILL.md`        | Stage 1 - before finalizing contexts and artifact names  |
+| `boomi-to-polyapi/skills/generate-schemas-boomi/SKILL.md`      | Stage 1 - when deriving request or response schemas      |
+| `boomi-to-polyapi/skills/naming-conventions-boomi/SKILL.md`    | Stage 1 - before finalizing contexts and artifact names  |
 | `polyapi-typescript/skills/polyapi-sdk/SKILL.md`               | Stage 3 - before writing runtime TypeScript code         |
 | `polyapi-typescript/skills/coding-standards/SKILL.md`          | Stage 3 - before implementation and test edits           |
 | `polyapi-common/skills/generate-overview/SKILL.md`             | Stage 3 - after behavior-changing edits                  |
