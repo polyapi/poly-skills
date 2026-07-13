@@ -76,13 +76,13 @@ user to run Stage 1 and Stage 2 prompts first:
 
 Before playback, load planning skills:
 
--   `../design-analysis-common/SKILL.md`
--   `../polyapi-constructs-common/SKILL.md`
--   `../artefacts-usage-typescript/SKILL.md`
--   `../naming-conventions-boomi/SKILL.md`
--   `../generate-schemas-boomi/SKILL.md`
+-   `polyapi-common/skills/design-analysis/SKILL.md`
+-   `polyapi-common/skills/polyapi-constructs/SKILL.md`
+-   `polyapi-typescript/skills/artefacts-usage/SKILL.md`
+-   `polyapi-typescript/skills/coding-conventions/SKILL.md`
+-   `polyapi-typescript/skills/coding-standards/SKILL.md`
 
-Use `design-analysis-common` to interpret the approved design diagram and notes
+Use `design-analysis` to interpret the approved design diagram and notes
 before source-derived planning. Compare design intent against confirmed Boomi
 behavior and classify gaps as high-level design omissions, likely design
 mistakes, or intentional behavior changes requiring confirmation.
@@ -129,13 +129,13 @@ happens outside the PolyAPI deployment.
 
 **Extraction — for each detected RPG call, derive:**
 
-| Signal | What to extract |
-|---|---|
-| Program path (from cross-ref or DPP) | Format `/QSYS.LIB/<LIBRARY>.LIB/<PROGRAM>.PGM` |
-| Library name | Middle segment of the path, e.g. `PRD1FHMODP` |
-| Program name | Final segment without `.PGM`, e.g. `OI491` |
-| INOUT parameter size | From the `padRight(N, " ")` or equivalent padding step that prepares the flat-file input; this becomes `CHAR(N)` |
-| Parameter direction | Always `INOUT` when the same buffer carries both input and output; use `IN`/`OUT` only when Boomi evidence shows separate send/receive profiles |
+| Signal                               | What to extract                                                                                                                                 |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Program path (from cross-ref or DPP) | Format `/QSYS.LIB/<LIBRARY>.LIB/<PROGRAM>.PGM`                                                                                                  |
+| Library name                         | Middle segment of the path, e.g. `PRD1FHMODP`                                                                                                   |
+| Program name                         | Final segment without `.PGM`, e.g. `OI491`                                                                                                      |
+| INOUT parameter size                 | From the `padRight(N, " ")` or equivalent padding step that prepares the flat-file input; this becomes `CHAR(N)`                                |
+| Parameter direction                  | Always `INOUT` when the same buffer carries both input and output; use `IN`/`OUT` only when Boomi evidence shows separate send/receive profiles |
 
 **Generated DDL — produce one block per detected RPG program:**
 
@@ -225,7 +225,7 @@ proposed correction.
    variables, secrets, Tabis, jobs, downstream integrations, schema sources,
    XML/JSON handling, status-code parity, tests, and reuse of existing patterns
 10. PolyAPI construct mapping from Boomi source constructs to proposed artifacts
-   and functions
+    and functions
 
 Include a payload parity checkpoint:
 
@@ -284,12 +284,10 @@ Branching rules:
 
 Load shared implementation skills before writing files:
 
--   `../coding-conventions-typescript/SKILL.md`
--   `../coding-standards-typescript/SKILL.md`
--   `../artefacts-usage-typescript/SKILL.md`
--   `../generate-schemas-boomi/SKILL.md`
--   `../naming-conventions-boomi/SKILL.md`
--   `../polyapi-constructs-common/SKILL.md`
+-   `polyapi-typescript/skills/coding-conventions/SKILL.md`
+-   `polyapi-typescript/skills/coding-standards/SKILL.md`
+-   `polyapi-typescript/skills/artefacts-usage/SKILL.md`
+-   `polyapi-common/skills/polyapi-constructs/SKILL.md`
 
 Preserve exact Boomi behavior unless a change is explicitly approved.
 
@@ -310,7 +308,7 @@ pnpm workflows exec poly generate
 ```
 
 Only after this step does `poly.*` expose the new path with correct types. See
-the `polyapi-sdk-typescript` skill for the full deploy-first cycle rules.
+`polyapi-typescript/skills/polyapi-sdk/SKILL.md` for the full deploy-first cycle rules.
 
 ## Step 6 - Write Tests
 
@@ -354,7 +352,9 @@ function stubPoly(
     });
 }
 
-const happyRequest = { /* minimal valid request shape */ };
+const happyRequest = {
+    /* minimal valid request shape */
+};
 
 test.serial("happy path returns expected response", async (t) => {
     stubPoly(t, poly.covetrus.myContext as any, "myClientFn", async () => ({ result: "ok" }));
@@ -404,7 +404,7 @@ Write at least one test per case:
 
 Load skill:
 
--   `../generate-overview-common/SKILL.md`
+-   `polyapi-common/skills/generate-overview/SKILL.md`
 
 Create or refresh `workflows/src/<integrationName>/OVERVIEW.md` after
 behavior-changing edits.
@@ -497,7 +497,7 @@ the full stack behaves correctly against the live environment.
 -   Boomi map and script behavior is reproduced
 -   API boundary body shapes match Boomi runtime behavior
 -   Status codes match Boomi behavior
--   Approved design is analyzed with `design-analysis-common` before planning
+-   Approved design is analyzed with `design-analysis` before planning
 -   PolyAPI constructs are mapped from Boomi evidence and documented in playback
 -   Runtime variables are derived from source evidence and implementation usage
 -   No secret values are stored in source files or artifacts
