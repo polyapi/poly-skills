@@ -11,11 +11,11 @@ You must follow `AGENTS.md` before doing any analysis.
 
 Load the following skills before or during analysis as indicated.
 
-| Skill                                            | When to load                                                                                   |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| `.agents/skills/boomi-download-source/SKILL.md`  | Before source analysis when raw XML has not yet been downloaded                                |
-| `.agents/skills/boomi-compress-source/SKILL.md`  | After raw XML download, before implementation planning                                         |
-| `.agents/skills/design-analysis-common/SKILL.md` | When a target design diagram is provided, before comparing it against confirmed Boomi behavior |
+| Skill                                                    | When to load                                                                                   |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `boomi-to-polyapi/skills/boomi-download-source/SKILL.md` | Before source analysis when raw XML has not yet been downloaded                                |
+| `boomi-to-polyapi/skills/boomi-compress-source/SKILL.md` | After raw XML download, before implementation planning                                         |
+| `polyapi-common/skills/design-analysis/SKILL.md`         | When a target design diagram is provided, before comparing it against confirmed Boomi behavior |
 
 ## Task
 
