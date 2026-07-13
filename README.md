@@ -11,7 +11,7 @@ Curated skills and agents for PolyAPI project implementations. It covers a wide 
 - [polyapi-python](./polyapi-python/README.md): Python-specific PolyAPI skills
 - [polyapi-typescript](./polyapi-typescript/README.md): TypeScript-specific
   PolyAPI skills
-- [common](./common/README.md): broad reusable non-PolyAPI skills
+- [common](./general/README.md): broad reusable non-PolyAPI skills
 
 ## Index
 
