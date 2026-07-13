@@ -77,8 +77,8 @@ patterns used in production.
   and related artefacts
 
 Baseline construct definitions live under `polyapi-common/skills/polyapi-constructs/`.
+Tabi implementation guidance now lives under `polyapi-common/skills/tabi/`.
 
-- `tabi`: advanced skill on how to create and use tabi's
 - `vari-and-tabi-patterns`: when to model data in vari vs tabi, how to handle
   secrets vs config vs cache, and how jobs fit around retention and cleanup
 
