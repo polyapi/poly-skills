@@ -4,6 +4,8 @@ Curated skills and agents for PolyAPI project implementations. It covers a wide 
 
 ## Browse
 
+- [boomi-to-polyapi](./boomi-to-polyapi/README.md): Dell Boomi analysis and
+  migration pack
 - [mulesoft-to-polyapi](./mulesoft-to-polyapi/README.md): MuleSoft analysis and
   migration pack
 - [polyapi-common](./polyapi-common/README.md): shared PolyAPI design and repo

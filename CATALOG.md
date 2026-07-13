@@ -2,6 +2,14 @@
 
 | Area | Type | Item | Notes |
 | --- | --- | --- | --- |
+| `boomi-to-polyapi` | Pack | `AGENTS.md` | Shared migration rules |
+| `boomi-to-polyapi` | Agent | `specialised_agents/BOOMI_ARCHITECT.md` | Boomi source analysis and manifest generation |
+| `boomi-to-polyapi` | Agent | `specialised_agents/POLYAPI_CODEAGENT.md` | PolyAPI TypeScript implementation orchestration |
+| `boomi-to-polyapi` | Skill | `boomi-download-source` | Download raw Boomi component XML and metadata |
+| `boomi-to-polyapi` | Skill | `boomi-compress-source` | Compress Boomi XML into compact evidence for analysis |
+| `boomi-to-polyapi` | Skill | `boomi-to-polyapi-conversion` | Stage-3 conversion workflow, playback, and approval gates |
+| `boomi-to-polyapi` | Skill | `naming-conventions-boomi` | Naming rules for Boomi-derived workflows, artifacts, and contexts |
+| `boomi-to-polyapi` | Skill | `generate-schemas-boomi` | Derive JSON Schemas from Boomi profiles and operations |
 | `mulesoft-to-polyapi` | Pack | `AGENTS.md` | Shared migration rules |
 | `mulesoft-to-polyapi` | Agent | `specialised_agents/MULE_ARCHITECT.md` | MuleSoft analysis and manifest generation |
 | `mulesoft-to-polyapi` | Agent | `specialised_agents/POLYAPI_CODEAGENT.md` | Generic PolyAPI implementation orchestration |
