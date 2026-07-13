@@ -22,7 +22,7 @@ implementation work can rely on.
 
 Run the standard compact-evidence generator script:
 
-`python3 .agents/skills/boomi-compress-source/scripts/generate_compact_evidence.py --integration-name "<integrationName>"`
+`python3 boomi-to-polyapi/skills/boomi-compress-source/scripts/generate_compact_evidence.py --integration-name "<integrationName>"`
 
 ## When To Use
 
@@ -56,13 +56,13 @@ contains so you can interpret the output correctly.
 
 ### Boomi Runtime Property Taxonomy
 
-| Output section | Boomi concept | What it holds |
-|---|---|---|
-| `definedProcessProperties` | Defined Process Property group (`processproperty` component) | Named, typed, labeled properties deployed as a group. `type="password"` properties have `isSecret=true` and no `defaultValue` in the output. |
-| `documentProperties.dynamicProcessProperties` | Dynamic Process Property (DPP) | Process-scoped runtime variable. Set by `documentproperties` shapes with `propertyId="process.*"`. Inherits `isSecret=true` when sourced from a password-type Defined Process Property. |
-| `documentProperties.dynamicDocumentProperties` | Dynamic Document Property (DDP) | Document-scoped runtime variable. Set by `documentproperties` shapes with `propertyId="dynamicdocument.*"`. Cleared per document. |
-| `connectionSettings` | Connection configuration (`connector-settings` component) | Host, URL, driver, username. `hasEncryptedPassword=true` when a password is stored encrypted. Password bytes are never included. |
-| `crossReferenceTables` | Cross-reference table (`crossref` component) | Lookup table with all column headers and rows. |
+| Output section                                 | Boomi concept                                                | What it holds                                                                                                                                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `definedProcessProperties`                     | Defined Process Property group (`processproperty` component) | Named, typed, labeled properties deployed as a group. `type="password"` properties have `isSecret=true` and no `defaultValue` in the output.                                            |
+| `documentProperties.dynamicProcessProperties`  | Dynamic Process Property (DPP)                               | Process-scoped runtime variable. Set by `documentproperties` shapes with `propertyId="process.*"`. Inherits `isSecret=true` when sourced from a password-type Defined Process Property. |
+| `documentProperties.dynamicDocumentProperties` | Dynamic Document Property (DDP)                              | Document-scoped runtime variable. Set by `documentproperties` shapes with `propertyId="dynamicdocument.*"`. Cleared per document.                                                       |
+| `connectionSettings`                           | Connection configuration (`connector-settings` component)    | Host, URL, driver, username. `hasEncryptedPassword=true` when a password is stored encrypted. Password bytes are never included.                                                        |
+| `crossReferenceTables`                         | Cross-reference table (`crossref` component)                 | Lookup table with all column headers and rows.                                                                                                                                          |
 
 ### Recording extracted data in the manifest
 

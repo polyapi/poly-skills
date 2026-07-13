@@ -53,7 +53,7 @@ playback.
 ## Command
 
 ```bash
-python3 .agents/skills/boomi-download-source/scripts/download_integration_xmls.py \
+python3 boomi-to-polyapi/skills/boomi-download-source/scripts/download_integration_xmls.py \
   --integration-name "<integrationName>" \
   --folder-name "<FolderName>" \
   --env-file "<envFilePath>" \

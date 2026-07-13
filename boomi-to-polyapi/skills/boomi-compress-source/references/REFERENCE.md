@@ -10,7 +10,7 @@ without losing boundary-contract clarity.
 Run from repository root:
 
 ```bash
-python3 .agents/skills/boomi-compress-source/scripts/generate_compact_evidence.py \
+python3 boomi-to-polyapi/skills/boomi-compress-source/scripts/generate_compact_evidence.py \
 	--integration-name "<integrationName>"
 ```
 
@@ -39,8 +39,8 @@ Required major sections:
 1. summary heading (preferred `## Title and Summary`; compatibility allows
    `## 1. Title and Summary`, `## Summary`, or `## Project Summary`)
 2. `## Table of Contents` or `## Contents`
-      - TOC should start at 1 with `Common Elements`; do not include `Title and
-         Summary`
+    - TOC should start at 1 with `Common Elements`; do not include `Title and
+ Summary`
 3. common elements heading (preferred `## 2. Common Elements`; compatibility
    allows `## Common Elements`)
 4. integration flows heading (preferred `## 3. Integration Flows`;
