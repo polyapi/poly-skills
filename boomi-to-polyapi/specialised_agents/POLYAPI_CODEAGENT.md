@@ -16,17 +16,17 @@ You must follow `AGENTS.md` before implementation.
 
 Load skills at stage boundaries to keep context focused.
 
-| Skill                                                   | Load at                                                  |
-| ------------------------------------------------------- | -------------------------------------------------------- |
-| `.agents/skills/boomi-to-polyapi-conversion/SKILL.md`   | Stage 1 entry — load as soon as both inputs are provided |
-| `.agents/skills/design-analysis-common/SKILL.md`        | Stage 1 - as soon as an approved design is provided      |
-| `.agents/skills/coding-conventions-typescript/SKILL.md` | Stage 1 - before naming, layout, and plan playback       |
-| `.agents/skills/artefacts-usage-typescript/SKILL.md`    | Stage 1 - before artifact file planning or edits         |
-| `.agents/skills/generate-schemas-boomi/SKILL.md`        | Stage 1 - when deriving request or response schemas      |
-| `.agents/skills/naming-conventions-boomi/SKILL.md`      | Stage 1 - before finalizing contexts and artifact names  |
-| `.agents/skills/polyapi-sdk-typescript/SKILL.md`        | Stage 3 - before writing runtime TypeScript code         |
-| `.agents/skills/coding-standards-typescript/SKILL.md`   | Stage 3 - before implementation and test edits           |
-| `.agents/skills/generate-overview-common/SKILL.md`      | Stage 3 - after behavior-changing edits                  |
+| Skill                                                          | Load at                                                  |
+| -------------------------------------------------------------- | -------------------------------------------------------- |
+| `boomi-to-polyapi/skills/boomi-to-polyapi-conversion/SKILL.md` | Stage 1 entry — load as soon as both inputs are provided |
+| `polyapi-common/skills/design-analysis/SKILL.md`               | Stage 1 - as soon as an approved design is provided      |
+| `polyapi-typescript/skills/coding-conventions/SKILL.md`        | Stage 1 - before naming, layout, and plan playback       |
+| `polyapi-typescript/skills/artefacts-usage/SKILL.md`           | Stage 1 - before artifact file planning or edits         |
+| `polyapi-common/skills/polyapi-constructs/SKILL.md`            | Stage 1 - when deriving request or response schemas      |
+| `polyapi-typescript/skills/coding-conventions/SKILL.md`        | Stage 1 - before finalizing contexts and artifact names  |
+| `polyapi-typescript/skills/polyapi-sdk/SKILL.md`               | Stage 3 - before writing runtime TypeScript code         |
+| `polyapi-typescript/skills/coding-standards/SKILL.md`          | Stage 3 - before implementation and test edits           |
+| `polyapi-common/skills/generate-overview/SKILL.md`             | Stage 3 - after behavior-changing edits                  |
 
 ## Mandatory Input Gate
 
@@ -58,12 +58,12 @@ Ask exactly:
 
 > What is the name of the Boomi integration you want to migrate?
 
-- If an integration name was already provided earlier in the same session, ask
-  for confirmation instead: `Use integration name <value>? (yes/no)`
-- If user answers `no`, ask the question again.
-- If the answer is empty, ask again before continuing.
-- Stop after this question and wait. Do not ask for the design in the same
-  response.
+-   If an integration name was already provided earlier in the same session, ask
+    for confirmation instead: `Use integration name <value>? (yes/no)`
+-   If user answers `no`, ask the question again.
+-   If the answer is empty, ask again before continuing.
+-   Stop after this question and wait. Do not ask for the design in the same
+    response.
 
 **Question 2 — Approved design:**
 
@@ -71,12 +71,12 @@ Ask exactly:
 
 > Please provide the approved target PolyAPI design, ideally as a diagram plus any supporting notes.
 
-- If user types `none`, proceed without a design and note in playback that no
-  design was provided.
-- If the user provides only an integration name or path with no design content,
-  the design is still missing — ask the design question and stop.
-- Do not proceed to source analysis or playback until the design is provided or
-  the user explicitly types `none`.
+-   If user types `none`, proceed without a design and note in playback that no
+    design was provided.
+-   If the user provides only an integration name or path with no design content,
+    the design is still missing — ask the design question and stop.
+-   Do not proceed to source analysis or playback until the design is provided or
+    the user explicitly types `none`.
 
 Until both inputs are available the only allowed behavior is requesting the
 missing input and waiting. Do not inspect Boomi source files, read analysis
@@ -121,7 +121,7 @@ Follow this sequence:
 9. Present Stage 2 playback with clarification questions, assumptions,
    behavioral risk detection, and an implementation plan.
 10. Wait for clarification answers or explicit implementation approval, as
-   required by Stage 2.
+    required by Stage 2.
 11. Implement TypeScript functions and JSON artifacts.
 12. Before each `pnpm workflows push`, run a separate explicit deployment
     approval gate (`Approve yes/no`) in the active conversation.
@@ -260,34 +260,34 @@ enough information to safely name, classify, or scope it.
 Use this mapping as the default starting point, then adjust when the approved
 design or confirmed Boomi behavior requires a different PolyAPI construct.
 
-| Boomi construct or behavior                                           | PolyAPI construct or implementation                                              |
-| --------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| API Service / HTTP listener style entrypoint                          | Webhook                                                                          |
-| Public endpoint route to logic                                        | Trigger                                                                          |
-| Main process XML / top-level integration flow                         | Server function orchestrator                                                     |
-| Referenced subprocess XML                                             | Client function                                                                  |
-| Reusable subprocess shared across workflows                           | Client function under `workflows/src/utilities/` when callable through PolyAPI, or shared utility only when it is pure local code |
+| Boomi construct or behavior                                                | PolyAPI construct or implementation                                                                                                    |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| API Service / HTTP listener style entrypoint                               | Webhook                                                                                                                                |
+| Public endpoint route to logic                                             | Trigger                                                                                                                                |
+| Main process XML / top-level integration flow                              | Server function orchestrator                                                                                                           |
+| Referenced subprocess XML                                                  | Client function                                                                                                                        |
+| Reusable subprocess shared across workflows                                | Client function under `workflows/src/utilities/` when callable through PolyAPI, or shared utility only when it is pure local code      |
 | Boundary payload format conversion, such as XML, SOAP, CSV, or fixed-width | Parse/decode once at the boundary into typed TypeScript objects; serialize/encode only at outbound boundaries that require that format |
-| Boomi Map Editor map / profile-to-profile transform                   | Named object-to-object TypeScript transform; use a client function for material named Boomi maps |
-| Decision / branch shape                                               | Explicit conditional logic                                                       |
-| Data Process / script shape                                           | Focused TypeScript helper or utility                                             |
-| Non-DB2 connector call                                                | `poly.*` call, client function, or adapter                                       |
-| Connection credentials                                                | Secret or obscured `vari` artifact                                               |
-| Defined Process Property / environment extension                      | `vari` artifact, secret or non-secret according to source classification         |
-| Dynamic Process Property or Dynamic Document Property set during flow  | Explicit typed execution context or local state; only use `vari` when the value is runtime configuration shared across executions |
-| Small config, retry policy, token cache                               | `vari` artifact                                                                  |
-| Lookup table, idempotency, growing state                              | `tabi` artifact                                                                  |
-| Schedule                                                              | `jobs` artifact plus server function                                             |
-| Exception / try-catch branch                                          | Explicit error handling and status mapping                                       |
-| Operation/profile request and response                                | JSON schemas and TypeScript boundary contracts                                   |
-| **Boomi Database Connector (AS400 / DB2 for i)**                      | **`poly.covetrus.utilities.db2Adapter` — see DB2 / AS400 Adapter section below** |
-| DB connector — SELECT / INSERT / DELETE / UPDATE SQL statement        | `db2Adapter(dbName, 'query', sqlStatement)`                                      |
-| DB connector — stored procedure call                                  | `db2Adapter(dbName, 'procedure', schema, procedureName, parameters)`             |
-| AS400 JTOpen `ProgramCall` in Groovy Data Process script              | `db2Adapter(dbName, 'procedure', schema, programName, parameters)`               |
-| AS400 `ProgramParameter` byte array + IBM037 EBCDIC encoding          | Plain typed parameters passed to `db2Adapter` procedure call                    |
-| AS400 DPPs: Server, Userid, Password, Full Program Name, Return Length | Resolved from `db2Adapter` vari — no equivalent DPPs needed in PolyAPI          |
-| Boomi Cross-Reference Table for RPG program IFS paths                 | Not needed — IBM i RPG programs are invoked by logical name via SQL CALL         |
-| AS400 `DatabaseConnectionSettings` (driver, host, port, credentials)  | `vari.covetrus.utilities.db2Adapter.<dbName>.config` + `.password`               |
+| Boomi Map Editor map / profile-to-profile transform                        | Named object-to-object TypeScript transform; use a client function for material named Boomi maps                                       |
+| Decision / branch shape                                                    | Explicit conditional logic                                                                                                             |
+| Data Process / script shape                                                | Focused TypeScript helper or utility                                                                                                   |
+| Non-DB2 connector call                                                     | `poly.*` call, client function, or adapter                                                                                             |
+| Connection credentials                                                     | Secret or obscured `vari` artifact                                                                                                     |
+| Defined Process Property / environment extension                           | `vari` artifact, secret or non-secret according to source classification                                                               |
+| Dynamic Process Property or Dynamic Document Property set during flow      | Explicit typed execution context or local state; only use `vari` when the value is runtime configuration shared across executions      |
+| Small config, retry policy, token cache                                    | `vari` artifact                                                                                                                        |
+| Lookup table, idempotency, growing state                                   | `tabi` artifact                                                                                                                        |
+| Schedule                                                                   | `jobs` artifact plus server function                                                                                                   |
+| Exception / try-catch branch                                               | Explicit error handling and status mapping                                                                                             |
+| Operation/profile request and response                                     | JSON schemas and TypeScript boundary contracts                                                                                         |
+| **Boomi Database Connector (AS400 / DB2 for i)**                           | **`poly.covetrus.utilities.db2Adapter` — see DB2 / AS400 Adapter section below**                                                       |
+| DB connector — SELECT / INSERT / DELETE / UPDATE SQL statement             | `db2Adapter(dbName, 'query', sqlStatement)`                                                                                            |
+| DB connector — stored procedure call                                       | `db2Adapter(dbName, 'procedure', schema, procedureName, parameters)`                                                                   |
+| AS400 JTOpen `ProgramCall` in Groovy Data Process script                   | `db2Adapter(dbName, 'procedure', schema, programName, parameters)`                                                                     |
+| AS400 `ProgramParameter` byte array + IBM037 EBCDIC encoding               | Plain typed parameters passed to `db2Adapter` procedure call                                                                           |
+| AS400 DPPs: Server, Userid, Password, Full Program Name, Return Length     | Resolved from `db2Adapter` vari — no equivalent DPPs needed in PolyAPI                                                                 |
+| Boomi Cross-Reference Table for RPG program IFS paths                      | Not needed — IBM i RPG programs are invoked by logical name via SQL CALL                                                               |
+| AS400 `DatabaseConnectionSettings` (driver, host, port, credentials)       | `vari.covetrus.utilities.db2Adapter.<dbName>.config` + `.password`                                                                     |
 
 If a source construct could map to more than one PolyAPI construct, choose the
 construct that preserves Boomi behavior with the least new surface area. Raise
@@ -321,17 +321,17 @@ payload.
 
 Classify Boomi properties by runtime meaning before creating artifacts.
 
-| Boomi property source                                      | PolyAPI representation                                                        |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Defined Process Property with non-secret configuration     | Non-secret `vari` artifact                                                    |
-| Defined Process Property with `type="password"`            | Secret `vari` artifact metadata only                                          |
-| Environment extension                                      | `vari` artifact, secret or non-secret according to source classification      |
-| Connector username, host, URL, tenant, or base path        | Obscured or non-secret `vari` artifact depending on sensitivity               |
-| Connector password, token, key, or credential material     | Secret `vari` artifact metadata only                                          |
-| Dynamic Process Property used as per-execution state       | Typed local execution context passed between server/client functions          |
-| Dynamic Document Property used as per-document state       | Typed local document context carried with that document or mapped payload      |
-| DDP/DPP value copied from an XML or JSON payload field      | Explicit field on the typed request/context object, sourced from that payload |
-| DDP/DPP value consumed only by a connector operation        | Local variable near the connector call, unless it is true runtime config       |
+| Boomi property source                                  | PolyAPI representation                                                        |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| Defined Process Property with non-secret configuration | Non-secret `vari` artifact                                                    |
+| Defined Process Property with `type="password"`        | Secret `vari` artifact metadata only                                          |
+| Environment extension                                  | `vari` artifact, secret or non-secret according to source classification      |
+| Connector username, host, URL, tenant, or base path    | Obscured or non-secret `vari` artifact depending on sensitivity               |
+| Connector password, token, key, or credential material | Secret `vari` artifact metadata only                                          |
+| Dynamic Process Property used as per-execution state   | Typed local execution context passed between server/client functions          |
+| Dynamic Document Property used as per-document state   | Typed local document context carried with that document or mapped payload     |
+| DDP/DPP value copied from an XML or JSON payload field | Explicit field on the typed request/context object, sourced from that payload |
+| DDP/DPP value consumed only by a connector operation   | Local variable near the connector call, unless it is true runtime config      |
 
 Do not store per-request or per-document Boomi state in `vari`; `vari` is shared
 runtime configuration. When a Set Properties step extracts values such as
@@ -391,24 +391,24 @@ Boomi Database Connector (AS400 JDBC) operation and every AS400 JTOpen
 #### Calling conventions
 
 ```typescript
-import poly from 'polyapi';
+import poly from "polyapi";
 
 // SQL query (SELECT, INSERT, DELETE, UPDATE)
 const result = await poly.covetrus.utilities.db2Adapter(
-  dbName,          // key under vari.covetrus.utilities.db2Adapter
-  'query',
-  sqlStatement     // full SQL string
+    dbName, // key under vari.covetrus.utilities.db2Adapter
+    "query",
+    sqlStatement, // full SQL string
 );
 // result.rows — Db2OutputRow[]
 // result.rowCount — number of rows returned or affected
 
 // Stored procedure or RPG program call
 const result = await poly.covetrus.utilities.db2Adapter(
-  dbName,
-  'procedure',
-  schema,          // DB2 schema / library (e.g. 'OSLOIF3', 'Boomi')
-  procedureName,   // procedure or RPG program name (e.g. 'ValidateOrderSubmit')
-  parameters       // (string | number | boolean | null | Date | Buffer)[]
+    dbName,
+    "procedure",
+    schema, // DB2 schema / library (e.g. 'OSLOIF3', 'Boomi')
+    procedureName, // procedure or RPG program name (e.g. 'ValidateOrderSubmit')
+    parameters, // (string | number | boolean | null | Date | Buffer)[]
 );
 // result.parameters — output parameters returned by the procedure
 // result.returnCode — SQL return code
