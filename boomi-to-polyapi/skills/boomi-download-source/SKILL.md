@@ -1,6 +1,6 @@
 ---
 name: boomi-download-source
-description: Download Boomi integration XML components directly from the Boomi API into boomi-integrations/<integrationName>/raw for migration analysis.
+description: Use when raw Boomi component XML is missing and you need to download an integration and its dependencies from the Boomi API into boomi-integrations/<integrationName>/raw for analysis.
 compatibility: Designed for Dell Boomi API exports and repository-local Boomi source preparation.
 ---
 
