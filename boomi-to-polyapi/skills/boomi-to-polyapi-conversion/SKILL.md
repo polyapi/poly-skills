@@ -1,6 +1,6 @@
 ---
 name: boomi-to-polyapi-conversion
-description: Stage-3 Dell Boomi to PolyAPI conversion workflow requiring an integration name, approved target design, source/design analysis, mandatory playback, and approval gate before implementation.
+description: Use when converting an already-analyzed Boomi integration into a PolyAPI TypeScript workflow and you need mandatory playback and approval gates before implementation.
 ---
 
 # Skill: Dell Boomi to PolyAPI Conversion
