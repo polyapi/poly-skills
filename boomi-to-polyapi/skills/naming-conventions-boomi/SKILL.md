@@ -1,6 +1,6 @@
 ---
 name: naming-conventions-boomi
-description: Enforces naming rules for Boomi-to-PolyAPI TypeScript workflows, artifacts, contexts, and shared utilities. Use before naming or reviewing any migration artifact.
+description: Use when naming or reviewing Boomi-to-PolyAPI workflows, artifacts, contexts, and shared utilities to keep migration outputs consistent.
 ---
 
 # Skill: Naming Conventions
