@@ -135,7 +135,7 @@ satisfied.
 
 ### Stage 1 - Interpret Design and Source
 
-Load `design-analysis-common` as soon as the approved design is available. Use it
+Load `polyapi-common/skills/design-analysis/SKILL.md` as soon as the approved design is available. Use it
 to interpret diagram colors, arrows, notes, construct intent, and ambiguity.
 
 Then inspect the Boomi evidence for the named integration and recover source
