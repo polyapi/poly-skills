@@ -109,7 +109,7 @@ Follow this sequence:
 
 1. Obtain the Boomi integration name.
 2. Obtain the approved target PolyAPI design.
-3. Load `design-analysis-common` and interpret the approved design.
+3. Load `polyapi-common/skills/design-analysis/SKILL.md` and interpret the approved design.
 4. Review the Boomi source evidence.
 5. Recover the Boomi boundary contracts, control flow, transformations,
    dependencies, variables, schedules, and side effects from the source
