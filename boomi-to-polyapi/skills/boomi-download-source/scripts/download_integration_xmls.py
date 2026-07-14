@@ -333,11 +333,15 @@ def main() -> int:
         return 2
 
     safe_name = _slugify(args.integration_name)
-    if args.output_dir:
-        output_dir = Path(args.output_dir)
-    else:
-        output_dir = Path("boomi-integrations") / safe_name / "raw"
+    repo_root = _find_repo_root(Path(__file__).resolve())
 
+    if args.output_dir:
+        output_dir = Path(args.output_dir).expanduser()
+        if not output_dir.is_absolute():
+            output_dir = repo_root / output_dir
+        output_dir = output_dir.resolve()
+    else:
+        output_dir = repo_root / "boomi-integrations" / safe_name / "raw"
     if args.clean_first and output_dir.exists():
         shutil.rmtree(output_dir)
 
