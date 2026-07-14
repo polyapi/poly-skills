@@ -1,6 +1,6 @@
 ---
 name: generate-schemas-boomi
-description: Builds JSON Schema guidance from Boomi profiles, operations, XML samples, or JSON samples. Use when a Boomi project needs explicit request or response contracts for PolyAPI artifacts.
+description: Use when deriving explicit PolyAPI request/response JSON Schemas from Boomi profiles, operations, or trusted XML/JSON samples.
 compatibility: Designed for Boomi profile analysis and TypeScript PolyAPI webhook/schema artifacts.
 ---
 
