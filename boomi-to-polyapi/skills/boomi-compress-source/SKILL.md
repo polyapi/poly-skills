@@ -1,6 +1,6 @@
 ---
 name: boomi-compress-source
-description: Produces a compact Boomi evidence pack for later PolyAPI implementation. Use at the start of Boomi analysis before writing migration code.
+description: Use when raw Boomi XML has been downloaded and you need a compact evidence pack under boomi-integrations/<integrationName>/analysis for migration planning and implementation.
 compatibility: Designed for Dell Boomi exports, Boomi analysis documents, and the TypeScript migration workflow in this repo.
 ---
 
