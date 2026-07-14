@@ -200,7 +200,7 @@ Propose a concrete plan including:
 -   client functions
 -   utilities or adapters
 -   variables and secrets
--   Tabis
+-   `tabi` tables
 -   jobs
 -   downstream integrations
 -   request and response schema sources
