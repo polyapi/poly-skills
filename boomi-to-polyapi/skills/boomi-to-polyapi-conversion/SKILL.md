@@ -236,7 +236,7 @@ proposed correction.
 7. Dependencies (systems, variables, side effects)
 8. Workflow name and file plan under `workflows/src/<integrationName>/`
 9. Webhooks, triggers, server functions, client functions, utilities/adapters,
-   variables, secrets, Tabis, jobs, downstream integrations, schema sources,
+   variables, secrets, `tabi` tables, jobs, downstream integrations, schema sources,
    XML/JSON handling, status-code parity, tests, and reuse of existing patterns
 10. PolyAPI construct mapping from Boomi source constructs to proposed artifacts
     and functions
