@@ -86,10 +86,10 @@ The output must make explicit:
 
 The manifest `Runtime Configuration` subsection (inside Common Elements) must
 document every property, secret, connection, and lookup table used by the
-integration. This data comes from three XML component types the compact-evidence
-generator does not extract. Before writing this section, the agent must read
-those XML files directly using its file-reading tools, following the
-`boomi-compress-source` skill. No human input is required for this step.
+integration. This data should be sourced from the generated compact evidence
+(`compactEvidence.json` / `compactEvidence.md`) sections for defined process
+properties, connection settings, cross-reference tables, and document properties.
+If those sections are missing or incomplete, read the raw dependency XML files directly.
 
 ### Secrecy classification
 
