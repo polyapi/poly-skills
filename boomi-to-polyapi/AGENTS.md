@@ -83,7 +83,7 @@ behaviour more faithfully.
 
 ## Security Constraints
 
-- Never read or access `dev.env`, `.env`, `.env.*`, or any file containing secrets or credentials
+- Agents must not directly read, parse, print, summarize, or otherwise inspect `dev.env`, `.env`, or `.env.*` files; pack/runtime scripts may load a user-provided env file path at execution time to access required credentials.
 - Never access files with extensions like `.key`, `.pem`, `.p12`, `.pfx`, `.crt`
 - Only operate within explicitly allowed project directories (e.g. `boomi-integrations/`, `workflows/`)
 - Do not execute arbitrary shell commands beyond this pack's own scripts and the target repo's sync/test commands
