@@ -5,6 +5,7 @@ language.
 
 ## Skills
 
+- [ai-functions](./skills/ai-functions/SKILL.md)
 - [canopy-ui](./skills/canopy-ui/SKILL.md)
 - [design-analysis](./skills/design-analysis/SKILL.md)
 - [generate-overview](./skills/generate-overview/SKILL.md)

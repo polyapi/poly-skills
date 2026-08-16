@@ -373,8 +373,8 @@ const happyRequest = {
 };
 
 test.serial("happy path returns expected response", async (t) => {
-    stubPoly(t, poly.covetrus.myContext as any, "myClientFn", async () => ({ result: "ok" }));
-    stubPoly(t, poly.covetrus.utilities as any, "log", async () => undefined);
+    stubPoly(t, poly.loop.myContext as any, "myClientFn", async () => ({ result: "ok" }));
+    stubPoly(t, poly.loop.utilities as any, "log", async () => undefined);
     t.teardown(() => {
         polyCustom.responseStatusCode = undefined;
     });
@@ -385,10 +385,10 @@ test.serial("happy path returns expected response", async (t) => {
 });
 
 test.serial("returns 412 when client function throws", async (t) => {
-    stubPoly(t, poly.covetrus.myContext as any, "myClientFn", async () => {
+    stubPoly(t, poly.loop.myContext as any, "myClientFn", async () => {
         throw new Error("downstream failure");
     });
-    stubPoly(t, poly.covetrus.utilities as any, "log", async () => undefined);
+    stubPoly(t, poly.loop.utilities as any, "log", async () => undefined);
     t.teardown(() => {
         polyCustom.responseStatusCode = undefined;
     });

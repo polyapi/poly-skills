@@ -280,14 +280,14 @@ design or confirmed Boomi behavior requires a different PolyAPI construct.
 | Schedule                                                                   | `jobs` artifact plus server function                                                                                                   |
 | Exception / try-catch branch                                               | Explicit error handling and status mapping                                                                                             |
 | Operation/profile request and response                                     | JSON schemas and TypeScript boundary contracts                                                                                         |
-| **Boomi Database Connector (AS400 / DB2 for i)**                           | **`poly.covetrus.utilities.db2Adapter` — see DB2 / AS400 Adapter section below**                                                       |
+| **Boomi Database Connector (AS400 / DB2 for i)**                           | **`poly.loop.utilities.db2Adapter` — see DB2 / AS400 Adapter section below**                                                       |
 | DB connector — SELECT / INSERT / DELETE / UPDATE SQL statement             | `db2Adapter(dbName, 'query', sqlStatement)`                                                                                            |
 | DB connector — stored procedure call                                       | `db2Adapter(dbName, 'procedure', schema, procedureName, parameters)`                                                                   |
 | AS400 JTOpen `ProgramCall` in Groovy Data Process script                   | `db2Adapter(dbName, 'procedure', schema, programName, parameters)`                                                                     |
 | AS400 `ProgramParameter` byte array + IBM037 EBCDIC encoding               | Plain typed parameters passed to `db2Adapter` procedure call                                                                           |
 | AS400 DPPs: Server, Userid, Password, Full Program Name, Return Length     | Resolved from `db2Adapter` vari — no equivalent DPPs needed in PolyAPI                                                                 |
 | Boomi Cross-Reference Table for RPG program IFS paths                      | Not needed — IBM i RPG programs are invoked by logical name via SQL CALL                                                               |
-| AS400 `DatabaseConnectionSettings` (driver, host, port, credentials)       | `vari.covetrus.utilities.db2Adapter.<dbName>.config` + `.password`                                                                     |
+| AS400 `DatabaseConnectionSettings` (driver, host, port, credentials)       | `vari.loop.utilities.db2Adapter.<dbName>.config` + `.password`                                                                     |
 
 If a source construct could map to more than one PolyAPI construct, choose the
 construct that preserves Boomi behavior with the least new surface area. Raise
@@ -386,7 +386,7 @@ The repository provides a shared server function at
 `workflows/src/utilities/db2Adapter/server/db2Adapter.ts` that replaces every
 Boomi Database Connector (AS400 JDBC) operation and every AS400 JTOpen
 `ProgramCall` script in the migration target. Always call it via
-`poly.covetrus.utilities.db2Adapter(...)`.
+`poly.loop.utilities.db2Adapter(...)`.
 
 #### Calling conventions
 
@@ -394,8 +394,8 @@ Boomi Database Connector (AS400 JDBC) operation and every AS400 JTOpen
 import poly from "polyapi";
 
 // SQL query (SELECT, INSERT, DELETE, UPDATE)
-const result = await poly.covetrus.utilities.db2Adapter(
-    dbName, // key under vari.covetrus.utilities.db2Adapter
+const result = await poly.loop.utilities.db2Adapter(
+    dbName, // key under vari.loop.utilities.db2Adapter
     "query",
     sqlStatement, // full SQL string
 );
@@ -403,7 +403,7 @@ const result = await poly.covetrus.utilities.db2Adapter(
 // result.rowCount — number of rows returned or affected
 
 // Stored procedure or RPG program call
-const result = await poly.covetrus.utilities.db2Adapter(
+const result = await poly.loop.utilities.db2Adapter(
     dbName,
     "procedure",
     schema, // DB2 schema / library (e.g. 'OSLOIF3', 'Boomi')
@@ -418,7 +418,7 @@ const result = await poly.covetrus.utilities.db2Adapter(
 #### dbName and vari
 
 `dbName` is a string key that must exist under
-`vari.covetrus.utilities.db2Adapter`. Each key holds a `.config` vari
+`vari.loop.utilities.db2Adapter`. Each key holds a `.config` vari
 (non-secret: system host, username, ODBC properties, pool settings) and a
 `.password` vari (secret).
 

@@ -77,6 +77,8 @@ patterns used in production.
   and related artefacts
 
 Baseline construct definitions live under `polyapi-common/skills/polyapi-constructs/`.
+AI Function selection and Flow artefact guidance lives under
+`polyapi-common/skills/ai-functions/`.
 Tabi implementation guidance now lives under `polyapi-common/skills/tabi/`.
 
 - `vari-and-tabi-patterns`: when to model data in vari vs tabi, how to handle
