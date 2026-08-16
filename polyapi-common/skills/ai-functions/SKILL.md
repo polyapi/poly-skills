@@ -67,8 +67,11 @@ Implementation instructions, urgency, or an earlier mention of AI Functions do n
 
 After approval, inspect a comparable artefact and confirm the namespace. Define focused arguments, a precise prompt and input template, and a strict output schema. Use tools only for authoritative facts. Keep the deterministic shell responsible for input preparation, output validation, policy, fallbacks, and side effects.
 
+Keep prompt content directly in the AI Function artefact's `systemPrompt` field by default. Use `systemPromptVariable` only when the user explicitly requests externally managed prompt content; never create a vari solely for prompt storage by default. Continue to use vari references for secrets and tool credentials.
+
 Make logs useful for later optimization: preserve the contract version, inputs and outputs allowed by security policy, validation results, human corrections, failures, latency, and cost. Never log secrets. Review observed cases before deciding what LOOP should make deterministic; do not optimize from imagined patterns.
 
 Use portable Flow references: `functionName` with `functionContext`, and `variableName` with `variableContext`. Never emit environment-specific `id`, `variableId`, `systemPromptVariableId`, `toolFunctionIds`, or `contextName`.
+Function reference contexts do not need to start with `POLYAPI_NAMESPACE`: they may identify any exact environment, tenant, or public function accessible to the target PolyAPI environment. Keep variable references and the AI Function artefact's own `context` inside `POLYAPI_NAMESPACE`.
 
 Read [references/examples.md](references/examples.md) before proposing or implementing an AI Function. It contains complete approval proposals, evolution plans, and valid Flow artefacts.

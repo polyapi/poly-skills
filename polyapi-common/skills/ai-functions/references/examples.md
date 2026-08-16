@@ -84,7 +84,7 @@ After approval:
 ```json
 {
   "name": "upliftingWeather",
-  "context": "example.weather",
+  "context": "example.sampleAiFx",
   "description": "Returns accurate, practical, and encouraging weather guidance tailored to an optional activity.",
   "visibility": "ENVIRONMENT",
   "state": "ALPHA",
@@ -114,8 +114,8 @@ After approval:
   "clientPromptArgName": "",
   "toolFunctions": [
     {
-      "functionName": "resolveWeatherLocation",
-      "functionContext": "example.weather",
+      "functionName": "search",
+      "functionContext": "accuWeather.locations",
       "argumentConfig": [
         {
           "key": "locationText",
@@ -125,13 +125,13 @@ After approval:
           "key": "apiKey",
           "source": "variable",
           "variableName": "weatherApiKey",
-          "variableContext": "example.config"
+          "variableContext": "example.sampleAiFx"
         }
       ]
     },
     {
-      "functionName": "getCurrentWeather",
-      "functionContext": "example.weather",
+      "functionName": "getByLocationKey",
+      "functionContext": "accuWeather.currentConditions",
       "argumentConfig": [
         {
           "key": "locationId",
@@ -141,7 +141,7 @@ After approval:
           "key": "apiKey",
           "source": "variable",
           "variableName": "weatherApiKey",
-          "variableContext": "example.config"
+          "variableContext": "example.sampleAiFx"
         }
       ]
     }
