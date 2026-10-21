@@ -1,119 +1,193 @@
-# Workflow overview reference
+# generate-overview Reference
 
-## Scope and discovery
+Resolve the workflow root from the active repo first. In the rules and examples
+below, substitute that root for `src/` (for example, `workflows/src/`).
 
-Choose the existing workflow or utility folder that owns the behavior, such as
-`<workflow_root>/message_of_the_day/` or `<workflow_root>/utilities/common/`.
-Create or update `OVERVIEW.md` there. Do not create empty deployment, script, or
-artefact folders just to match an example tree.
+This reference captures the required structure and validation rules for
+`OVERVIEW.md` generation in this repo. It is the canonical source for this
+skill.
 
-Read applicable project instructions and conventions, then inspect:
+## Same-Folder Rule
 
-1. Entrypoint code and function metadata under the configured discovery paths.
-2. Webhooks/triggers, jobs, subscription destinations, and known SDK callers.
-3. Client and helper behavior affecting validation, branching, loops, retries,
-   caching, state, error translation, or external I/O.
-4. Relevant schemas, Vari, Tabi, AI/tool bindings, Canopy configuration, and specs.
-5. Focused tests and checked-in commands confirming the intended behavior.
+`OVERVIEW.md` must be created or updated in the same folder that is being
+analysed.
 
-Use the language and naming patterns the project actually deploys. Common
-discovery hints are `server/*_sfx.py` / `server/*SFX.ts` and
-`client/*_cfx.py` / `client/*CFX.ts`; verify them against project discovery rules
-and metadata so differently named entrypoints are not missed. Server entrypoints
-normally define flows; client-only or utility folders can describe their callable
-surface and known consumers. Do not invent a deployed trigger because none is
-present. Label an inferred caller or unknown setup explicitly.
+Examples:
 
-Treat the current overview as navigation, not proof. Inspect supported source
-and configuration examples; exclude environment files, credential stores,
-private keys, generated caches, and customer data. A generated SDK contract may
-be useful evidence, but its credentials are not.
+- `src/currency_exchange/OVERVIEW.md`
+- `src/utilities/oracledb_adapter/OVERVIEW.md`
 
-## Suggested structure
+## Analysis Scope
 
-Adapt to the existing overview; retain sections that help maintainers. For a
-folder with several entrypoints, use a `Flow: <name>` section for each materially
-different flow. Avoid duplicate boilerplate and empty headings.
+- Analyse one workflow or utility folder at a time.
+- Use code and artefacts as the primary source of truth.
+- Use tests only to confirm behavior.
+- Treat an existing `OVERVIEW.md` as secondary reference only.
 
-| Section | Evidence to include when relevant |
-| --- | --- |
-| Purpose and entrypoints | Callable name/context, source links, webhook/trigger or caller |
-| Contracts | Inputs, outputs, validation, response status, error envelope |
-| Behavior | Important decisions, client/helper logic, external calls, persisted state |
-| Resources and configuration | Artefact links, exact contexts, config names, secrecy/injection, enabled state |
-| Operations | External effects, retry/idempotency, stream recreation limits, dependencies |
-| Verification | Existing local check commands and separate opt-in runtime checks |
+## Flow Discovery Rules
 
-For utility functions, describe meaningful helper behavior without fabricating a
-webhook or server wrapper. When shared behavior affects a consumer's contract,
-update the relevant consumer overview too, limited to that changed behavior.
+Verify these common filename patterns against the repo's discovery rules and
+function metadata; include supported entrypoints with other filenames.
 
-## Diagrams and flow details
+- Search the analysed folder for server entry points under `server/`.
+- Server entry points match:
+  - `*_sfx.py`
+  - `*SFX.ts`
+- If any server entry points exist, each one defines a primary flow.
+- If no server entry points exist, inspect `client/` and treat callable client
+  functions as flow candidates.
+- Client functions match:
+  - `*_cfx.py`
+  - `*CFX.ts`
+- Use the actual entrypoint name; the filename without its suffix is suitable
+  when it matches that entrypoint.
 
-Use a Mermaid flowchart for nontrivial branches or multi-resource flows. Small
-utilities can be clearer as prose or a table. Expand client/helper decisions that
-affect outcomes; do not diagram every assignment or formatting step.
+## Expansion Rules
 
-A useful chart includes:
+- Do not leave client functions as black-box steps.
+- Expand all client logic that affects behavior, including:
+  - conditionals
+  - guard clauses
+  - switch or match logic
+  - loops
+  - retries
+  - try or except handling
+- Expand utility or global logic when it performs:
+  - validation
+  - branching
+  - retries
+  - caching
+  - connection pooling
+  - error translation
+  - business-meaningful transformations
+  - external I/O
 
-- actual trigger or caller entry nodes;
-- important validation and business decisions;
-- relevant Vari/Tabi, API, database, or other external operations;
-- handled error paths and final outcomes.
+## Artefacts To Inspect
 
-Use simple node IDs, short labels, and valid Mermaid syntax. Give decisions
-explicit labeled outcomes (`yes`/`no` for Boolean choices, appropriate labels for
-multi-way results). Do not force multi-way logic into a false binary or omit an
-error path to simplify the chart. Keep implementation detail in the prose.
+- `artefacts/jobs/**`
+- `artefacts/webhooks/**`
+- `artefacts/canopy/**`
+- `artefacts/vari/**`
+- `artefacts/tabi/**`
+- `artefacts/types/**`
+- `artefacts/specs/**`
+- `deployment/**`
 
-For each significant step, explain its purpose, function/resource identity when
-known, important rules and failures, and clickable source/artefact links. An
-inferred caller has no implementation link to invent. The chart and text should
-describe the same flow and end states.
+Use them to determine:
 
-When a diagram is present, reuse its node IDs in the step details so a reader can
-trace a branch or failure to its implementation. This compact table is a useful
-default; equivalent labeled prose is fine:
+- triggers
+- contracts and payload shapes
+- Vari reads or injections
+- TABI reads or writes
+- deployment assumptions
 
-| Step ID | Role and behavior | Function or resource | Sources |
-| --- | --- | --- | --- |
-| Diagram node ID | Server/client/helper logic, resource operation, or caller; include the business rule and failure outcome | Exact context/name when known | Relative links to implementing code and relevant artefacts |
+## Required `OVERVIEW.md` Structure
 
-Link all files that jointly implement a significant step. Label external or
-inferred callers explicitly when no local implementation exists. A short utility
-without a diagram does not need artificial step IDs.
+For each primary flow, create a section with this heading:
 
-## Links and commands
+```md
+# Flow: <Flow Name>
+```
 
-Resolve relative Markdown links from the overview location, not the repo root.
-For example, a workflow overview can link to `./server/process_event_sfx.py`
-only if that file exists. A deeply nested utility needs more `../` segments for
-a root README link. Check the actual filesystem rather than copying link depth.
+Each flow section must include:
 
-Find commands in the maintained README, CLI help, Makefile, or package scripts.
-State their working directory and use the project's documented shell. Separate:
+- purpose of the flow
+- trigger mechanism or caller entry point
+- entrypoint type:
+  - server function
+  - client function
+  - inferred caller
+- client functions involved
+- utility or global functions involved
+- Vari usage
+- TABI or other persisted state usage
+- external systems involved
+- all end states
+- assumptions made
 
-- local formatting, lint, unit, and artefact validation;
-- generation/preview that needs a configured target;
-- opt-in runtime checks or mutations that need explicit authorization.
+## Flowchart Rules
 
-Link setup/CLI guides instead of duplicating secrets setup or full deployment
-procedures. Preserve exact non-secret configuration names and verified defaults.
-Use placeholders for secret values and label target-specific examples; no region
-or customer is implicitly the default target.
+Create a complete Mermaid flowchart for each flow showing:
 
-## Evidence and finishing checks
+- all triggers or callers, using `S0` or distinct IDs when there are several
+- all server logic if present
+- all primary client logic
+- expanded helper client logic
+- expanded utility or global logic that changes behavior
+- decisions and branches
+- Vari and TABI operations
+- external API or database calls
+- all end states
 
-Describe source behavior as source behavior. A mocked SDK call proves its local
-arguments and result handling, not live SDK generation, authentication, SECRET
-resolution, remote build, or deployment. Label unperformed checks accurately.
+Mermaid constraints:
 
-Before finishing, confirm:
+- use flowchart only
+- steps use `[ ]`
+- decisions use `{ }`
+- labels contain letters, digits, and spaces only
+- do not use parentheses in labels
+- node IDs use letters, digits, and underscores only
+- avoid reserved words such as `end`, `subgraph`, `class`, `click`, `style`,
+  and `link`
+- Boolean decisions have both `yes` and `no` paths
+- multi-way decisions label every applicable outcome
+- keep labels short and move detail into step descriptions
 
-- the smallest owning folder has one maintained `OVERVIEW.md`;
-- functions, contracts, triggers, and important helper behavior match current code;
-- resource identities, secrecy levels, and enabled states match checked-in artefacts;
-- diagram decisions/effects/outcomes agree with the implementation and prose;
-- local links and documented commands resolve in the target repository;
-- assumptions and remaining target-dependent checks are explicit;
-- no deployment or mutation was performed solely to manufacture documentation evidence.
+## Step Detail Requirements
+
+For every step in the flowchart, include:
+
+1. Step ID
+2. Business meaning
+3. Context path and function name
+4. Implementation file link
+5. Classification
+6. Business rules applied
+7. Error handling behavior
+
+Classification values:
+
+- trigger
+- inferred caller
+- server logic
+- primary client logic
+- client logic
+- utility logic
+- global logic
+- TABI
+- Vari
+- external API
+- external database
+- deployment or config
+
+Rules:
+
+- every locally implemented step must include at least one file link; label
+  external or inferred callers without inventing implementation files
+- links must be clickable relative Markdown links that resolve from the
+  `OVERVIEW.md` location
+- if logic spans multiple files, link all relevant files
+- link artefact files when referenced
+
+## Triggers and End States
+
+- List all triggers or inferred callers.
+- List all end states.
+- Every trigger or caller and every end state must also appear in the
+  flowchart.
+
+## Final Validation Checklist
+
+Before finishing, ensure:
+
+- every flow includes all actual or explicitly inferred trigger/caller entry nodes
+- every Boolean decision has `yes` and `no` paths; multi-way outcomes are labeled
+- every client function referenced by the flow is expanded
+- business-relevant utility and global logic is expanded
+- Vari and TABI usage appear in both text and diagram when used
+- external systems and databases are shown where called
+- all triggers or callers and all end states appear in both text and diagram
+- every locally implemented step includes valid clickable file links relative to the
+  `OVERVIEW.md` location
+- `OVERVIEW.md` is in the correct folder
+- assumptions are stated explicitly

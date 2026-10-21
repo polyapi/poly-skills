@@ -1,59 +1,86 @@
-# PolyAPI Python artefacts reference
+# artefacts-usage Reference
 
-## Workflow placement
+The layout below gives recommended defaults. Follow existing filenames for
+every resource, including unsuffixed JSON. Create only needed folders; omit
+`types/` when runtime types must be inline for single-file deployment. Keep
+one-off scripts outside deployable-function discovery.
 
-Resolve `<workflow_root>` from the active repository (`src/`, `workflows/src/`,
-or another configured root). Use these recommended filenames when the project
-has no convention for that file kind; established project naming takes precedence.
-Create only the files and directories the workflow needs:
+Resolve the workflow root from the active repo first. In the rules and examples
+below, substitute that root for `src/` (for example, `workflows/src/`).
+
+## Folder layout for a workflow
 
 ```text
-<workflow_root>/<workflow>/
+src/<workflow_name>/
   OVERVIEW.md
-  server/<name>_sfx.py
-  client/<name>_cfx.py
-  tests/test_<behavior>.py
+  server/
+    <name>_sfx.py
+  client/
+    <name>_cfx.py
+  types/
+    <name>_types.py
+  tests/
+    test_<name>.py
   artefacts/
-    schemas/<name>.json
-    webhooks/<name>_hook.json
-    triggers/<name>_trigger.json
-    vari/<name>_vari.json
-    jobs/<name>_job.json
-    tabi/<name>_tabi.json
-    ai-functions/<name>.json
-    canopy/<name>.json
-    subscriptions/<name>.json
-    specs/<name>_spec.json
+    canopy/
+      <name>.json
+    webhooks/
+      <name>_hook.json
+    triggers/
+      <name>_trigger.json
+    vari/
+      <name>_vari.json
+    jobs/
+      <name>_job.json
+    tabi/
+      <name>_tabi.json
+    specs/
+      <name>_spec.json
+  deployment/
+    <name>.sh
+  scripts/
+    <one_off_task>.py
 ```
 
-Use the same relevant structure under `<workflow_root>/utilities/<utility>/`
-for shared deployed behavior. Supported resource kinds come from the local
-sync tool. Keep inactive design examples outside its discovery paths.
-These filenames describe authored resources; preserve generated schema filenames
-and deployed identity fields. Use `coding-conventions` for naming and renames.
+## Folder layout for a shared utility
 
-A `types/<name>_types.py` module is useful only when its consumer can import or
-bundle it. If the deployer uploads one source file, keep required runtime
-types/helpers in that file or reuse a deployed function via the SDK.
-Where the repository supports workflow-local operator files, examples include
-`deployment/<workflow>.sh` and `scripts/<one_off_task>.py`; use its actual command
-shell and keep these outside deployable-function discovery. Do not create empty
-folders or treat operator scripts as runtime dependencies.
+```text
+src/utilities/<utility_name>/
+  OVERVIEW.md
+  server/
+    <name>_sfx.py
+  client/
+    <name>_cfx.py
+  types/
+    <name>_types.py
+  tests/
+    test_<name>.py
+  artefacts/
+    canopy/
+      <name>.json
+    vari/
+      <name>_vari.json
+    jobs/
+      <name>_job.json
+    tabi/
+      <name>_tabi.json
+    specs/
+      <name>_spec.json
+  deployment/
+    <name>.sh
+  scripts/
+    <one_off_task>.py
+```
 
-## Contract selection
+## Authoritative schema source
 
-The selected instance's `/swagger-json` describes its platform API. When a Flow
-or other adapter exists, its checked-in schemas and transformations describe
-local validation and translation to that API. Without an adapter, use the
-selected platform contract or its saved copy directly; portable reference
-objects are not automatically valid platform payloads. Do not add a deployer or
-schema-refresh wrapper merely to use this skill. On mismatch, identify the
-target/version and use the existing refresh path if available, within the
-authorized scope. Do not silently switch hosts or loosen schemas.
+Use the selected instance's `/swagger-json` or its saved contract for the JSON
+body shape of platform-managed artefacts. The checked-in repo conventions tell
+you where files live and how names align; the swagger tells you which fields
+the platform accepts. When a repo has an adapter, also check its local validation
+and reference transformations before treating local JSON as an API payload.
 
-Common mappings, to verify against that contract:
-
-| Artefact category | API resource | Typical create DTO |
+| Folder | Swagger resource | Create DTO |
 | --- | --- | --- |
 | `webhooks/` | `/webhooks` | `CreateWebhookHandleDto` |
 | `triggers/` | `/triggers` | `CreateTriggerDto` |
@@ -62,82 +89,135 @@ Common mappings, to verify against that contract:
 | `jobs/` | `/jobs` | `CreateJobDto` |
 | `tabi/` | `/tables` | `CreateTableDto` |
 
-For `ai-functions/`, `canopy/`, and `subscriptions/`, inspect the installed
-platform contract and local adapter. Do not infer endpoint names from folder
-names. The API calls Tabi resources tables.
+Notes:
+- The platform API names the `tabi` resource `tables`.
+- `canopy/` is not exposed under the same name in `swagger-json`; follow
+  checked-in repo examples or separate Canopy guidance for that artefact type.
 
-## Resource checks
-
-### Webhooks and triggers
-
-- Preserve the endpoint's intended method, slug, subpath, path/query mapping,
-  request/response schemas, and HTTP status behavior.
-- Follow the project's explicit endpoint or router design. Do not introduce
-  catch-all routes as a workaround for incomplete endpoint contracts.
-- Verify API-key requirements and security-function acceptance/rejection.
-- Check paired trigger destinations, exact arguments, response handling, error
-  routing, and enabled states together.
-- Use XML parser options only for an actual XML boundary and preserve the
-  upstream contract's array and normalization behavior.
-
-### Vari
-
-- Verify context, name, type, secrecy level, and supported value format.
-- Store placeholder metadata only for secrets. Set real values through the
-  authorized target mechanism; do not persist them in artefacts or logs.
-- Distinguish NONE configuration, sensitive OBSCURED/PARTIAL data, and opaque
-  SECRET injection. Verify read semantics in the pinned SDK and selected target;
-  do not cache sensitive values.
-- Do not overwrite an existing secret with an empty placeholder during sync.
-
-### Jobs, AI tools, and references
-
-Prefer portable references when the local adapter supports them, for example:
+## Webhook artefact
 
 ```json
-{"functionName": "process_event", "functionContext": "example.workflow"}
+{
+  "name": "<name>_hook",
+  "context": "<context.name>",
+  "description": "<short description of what this endpoint does>",
+  "subpath": "<url-path>?<param1>={<param1>}&<param2>={<param2>}",
+  "method": "POST",
+  "eventPayloadType": "null",
+  "responsePayload": {},
+  "responseStatus": 200,
+  "slug": "<project slug or token>",
+  "xmlParserOptions": {
+    "enabled": false,
+    "explicitArray": false,
+    "normalizeTags": false,
+    "trim": false
+  }
+}
 ```
+
+### Field rules
+
+| Field | Rule |
+| --- | --- |
+| `name` | Follow the repo's deployed naming convention; `_hook` is an example suffix. Keep paired webhook/trigger base names aligned where practical. |
+| `context` | Must follow the target repo's naming conventions. |
+| `subpath` | Must match the intended public URL, including path params as `{param}` and query params as `?key={key}`. |
+| `method` | Upper case. |
+| `eventPayloadTypeSchema` | Full JSON Schema of the request body when the endpoint accepts a body. Omit it or use the repo's established empty-body pattern when there is no body. |
+| `responsePayload` | Default response body when a trigger supplies no response data. |
+| `responseStatus` | Preserve the endpoint's intended status code. |
+| `slug` | Follow the checked-in repo convention. Preserve placeholder tokens when the repo uses them. |
+| `xmlParserOptions.enabled` | Set to `true` only when the caller sends XML that must be parsed. |
+
+### XML parsing options
 
 ```json
-{"variableName": "service_key", "variableContext": "example.workflow"}
+{
+  "xmlParserOptions": {
+    "enabled": true,
+    "explicitArray": true,
+    "trim": true,
+    "normalizeTags": true
+  }
+}
 ```
 
-These are reference objects, not standalone create requests. Follow the
-resource's actual enclosing schema. Resolve them in the selected environment;
-do not retain hardcoded IDs from another instance.
+Choose these flags from the XML contract; this is not an all-true default.
+Array shape, whitespace trimming, and lowercasing tags can change the payload.
 
-For jobs, verify schedule units, timezone behavior where supported, argument
-mapping, and intended enabled state. For AI functions, verify model/provider
-availability, tool signatures, secret bindings, and response schema. Training
-OpenAPI specs and invoking AI are separate effects from a local validation.
+## Variable artefact
 
-### Tabi, Canopy, and subscriptions
+```json
+{
+  "name": "<name>_vari",
+  "context": "<context.name>",
+  "description": "<what this variable stores>",
+  "value": "",
+  "secret": false
+}
+```
 
-- Match Tabi column/schema and row shapes to the current API and SDK contract.
-  Do not assume illustrative `columns`/`rows` fields are accepted create payloads.
-- Resolve Canopy identity using the local adapter's supported ID/name/subpath
-  rules. Preserve existing identity and descriptions; do not infer orphan
-  ownership merely from local absence.
-- Resolve GraphQL subscription destinations and provider configuration in the
-  selected target. Inspect whether the update path recreates the stream. A
-  delete/create can reset offsets or interrupt delivery and needs the existing
-  explicit confirmation.
+## Job artefact
 
-## Safe reconciliation
+```json
+{
+  "name": "<flow_name>",
+  "schedule": {
+    "type": "interval",
+    "value": 60,
+    "acceptableDelayTime": 30
+  },
+  "functions": [
+    {
+      "id": "<deployed function id>",
+      "headersPayload": {},
+      "eventPayload": {},
+      "paramsPayload": {}
+    }
+  ],
+  "enabled": true,
+  "executionType": "sequential"
+}
+```
 
-Establish ownership from the declared namespace and the adapter's resource
-identity rules. Jobs/triggers may lack a context and require owned prefixes and
-verified destination function IDs. External references do not broaden ownership.
+Where the repo's resolver supports it, use `functionName` and `functionContext`
+in place of a job function's `id`; the resolver supplies the selected target ID.
+Keep `enabled` at the intended state.
 
-Inspect a scoped dry run before sync. A rename can create a new resource and
-make an old identity appear orphaned. Treat deletion and stream recreation as
-separate reviewed effects, with dependency checks and independent readback.
+## Tabi artefact
 
-## Workflow overview
+```json
+{
+  "name": "<name>_tabi",
+  "context": "<context.name>",
+  "description": "<what this table contains>",
+  "columns": []
+}
+```
 
-Record purpose, entrypoints, resources, configuration names/secrecy levels,
-external effects, enabled states, failure behavior, and focused verification.
-Include migration provenance or parity notes only when a migration is actually
-part of the project: identify the source integration, preserved behavior, and
-known gaps or deliberate deviations. Distinguish local checks from deployed
-evidence.
+Use the selected table contract for columns; row data uses separate table API/SDK
+operations rather than the table-create payload.
+
+## Canopy artefact
+
+Treat `artefacts/canopy/` as optional. Use it only when the target repo checks
+in Canopy UI definitions alongside the rest of the workflow artefacts.
+
+## Shared placement guidance
+
+- Put normal workflow implementations under `src/<workflow_name>/`.
+- Put reusable cross-workflow code under `src/utilities/<utility_name>/`.
+- Keep `scripts/` folders for one-off helper tasks local to the workflow or utility they support.
+
+## OVERVIEW.md
+
+Every workflow folder must have an `OVERVIEW.md` describing:
+
+- integration purpose
+- source integration it migrates, when applicable
+- PolyAPI components created
+- required variables and secrets
+- downstream systems
+- behavioural parity notes, when migrating
+- known gaps or deviations
