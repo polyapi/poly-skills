@@ -1,96 +1,112 @@
-# polyapi-sdk Reference
+# PolyAPI Python SDK reference
 
-## Setup commands
+## Setup and target selection
+
+Read the project's manifest, lockfile, README, and deploy tooling first. Use its
+pinned Python and native `polyapi-python` versions with its existing package
+manager. Do not install the newest SDK or introduce another dependency manager
+as an implicit setup step.
+
+The native Python SDK uses `POLY_API_BASE_URL` and `POLY_API_KEY`. Use the
+explicitly selected instance and environment; do not assume a region or copy
+another project's credentials. Preserve any environment pin and execution-key
+requirements imposed by the deployer. Never inspect real environment files or
+`polyapi/.config.env` to discover credentials.
+
+When the repository delegates to the native CLI, inspect its installed help:
 
 ```bash
-pip install polyapi-python
-python -m polyapi setup
+python -m polyapi --help
+python -m polyapi function add --help
+```
+
+Run these through the project's interpreter, such as `uv run --locked python`
+when that is its documented workflow. Setup and generation require the selected
+target; they are not offline verification commands. For authorized generation,
+the native command is:
+
+```bash
 python -m polyapi generate
 ```
 
-After any deployment, re-run `python -m polyapi generate` to refresh the local SDK.
+Prefer the repository's target-bound Flow/deploy command when present. It may
+also enforce ownership and production checks and regenerate the SDK. Do not
+bypass those controls by switching to a bare native deployment command.
 
-## Python version
+## Types and source packaging
 
-Match the target repo's toolchain. The current GHA target repo uses Python 3.12.
-
-## Type mapping reference
-
-| JSON Schema type | Python type |
+| Schema or return type | Python annotation |
 | --- | --- |
 | `integer` | `int` |
 | `number` | `float` |
 | `string` | `str` |
 | `boolean` | `bool` |
-| `array` | `list` |
-| `object` | `dict` |
-| `void` | `None` |
+| `array` | `list[ItemType]` |
+| `object` | a local `TypedDict` or the supported dictionary contract |
+| `void` (SDK no-return type) | `None` |
 
-## Deployment commands
+Use annotations supported by the pinned Python/SDK pair. Import `TypedDict`
+from `typing_extensions`; do not substitute `typing.TypedDict` without verifying
+that the pinned SDK parser supports it. Recheck parser behavior during upgrades.
 
-```bash
-python -m polyapi function add <function_name> <file>.py --context <context.name> --server
-python -m polyapi function add <function_name> <file>.py --context <context.name> --client
-```
-
-## Webhook-linked SFX contract
-
-Any webhook-linked SFX receives exactly:
-
-| Argument | Type | Notes |
-| --- | --- | --- |
-| `__event` | `dict` | Request body or event payload |
-| `headers` | `dict` | HTTP or trigger headers |
-| `params` | `dict` | Query and path parameters |
-
-In router-driven HTTP flows, `headers` often includes `X-Http-Method`, `X-Original-Uri`, `Authorization`, and `X-Force-Log`.
-
-## Circular import pattern
-
-Never reference `poly.<context>.<Type>` inside a `TypedDict` definition when deploying to the same context.
-
-**Symptom:**
-
-```text
-AttributeError: partially initialized module 'polyapi.poly' has no attribute 'utils'
-(most likely due to a circular import)
-```
-
-**Fix:** redeclare the `TypedDict` locally in each file that needs it.
+For single-file deployment, define types in the submitted file:
 
 ```python
-class PlatformLoggingConfig(TypedDict):
-    site: str
-    api_key: str
+from typing_extensions import TypedDict
 
-class InitLoggerParams(TypedDict):
-    platform_config: PlatformLoggingConfig
+
+class RequestPayload(TypedDict):
+    name: str
 ```
 
-After fixing, regenerate:
+Do not import a neighboring `_types.py` unless the actual deployer packages it.
+Do not reference a sibling generated type in a `TypedDict` definition during
+same-context generation: eager generated imports can create a circular import.
 
-```bash
-python -m polyapi generate
-```
+Inspect the SDK parser's dependency discovery and the deployer's submitted
+source/requirements when diagnosing import failures. A local virtual environment
+and a deployed function are different environments. Declare and install actual
+runtime dependencies; do not suppress missing-package errors, substitute empty
+modules, or patch SDK package lookup to make parsing succeed.
 
-## SFX function shape
+## Function and generated-call contracts
 
-Server functions must always return a `dict`. Use `coding-standards` for exception ordering and logging, and do not let an unhandled exception escape the top-level handler.
+A webhook trigger commonly maps event, headers, and params to a server function.
+Verify its actual mapping, security-function contract, and optional router
+headers. Other server functions can take different arguments and return scalar,
+Boolean, or structured results supported by their generated contract.
 
-```python
-async def my_function_sfx(__event: dict, headers: dict, params: dict) -> dict:
-    if "required_param" not in params:
-        return {"error": "missing required_param"}  # Adapt to the repo boundary contract
-    return {"ok": True}
-```
+| Generated surface | What to verify |
+| --- | --- |
+| API/server function | Actual `_async` callable, arguments, and return envelope |
+| Async client function | Declared name and whether the caller must await it |
+| HTTP handler | Input mapping, response payload, and response-status metadata |
+| Webhook security function | Expected acceptance/rejection result, including `bool` |
 
-Use the active repo's standards skill for project-specific logger wiring and boundary payload rules.
+Inspect source without executing or printing credential configuration. Use exact
+API field names and generated SDK identifiers, even when they use different casing
+from locally authored Python files.
 
-## Virtual environment
+## Vari and injection
 
-```bash
-.\.venv\Scripts\Activate.ps1
-.\.venv\Scripts\activate.bat
-source .venv/bin/activate
-pip install -e ".[dev]"
-```
+Read by exact context path. If the generated `get_async()` returns JSON text,
+use `json.loads`, check the resulting type and required fields, and surface a
+bounded configuration error. Do not decode an already structured result blindly.
+
+SECRET injection is an opaque reference passed directly into a generated
+API/server call that supports it. The consumer must not resolve or serialize the
+reference itself. Test that the exact reference reaches the boundary unchanged.
+That local test does not prove the target resolves it. Direct-execute transport
+requires explicit support; reject it for an injection path when unsupported.
+
+Keep OBSCURED, PARTIAL, and SECRET values uncached. Cache NONE settings only with
+an explicit lifetime appropriate to their freshness needs.
+
+## Verification boundaries
+
+- Local parser/tests: imports, annotations, payload shapes, awaits, error branches.
+- Target generation: actual environment catalog and generated signatures.
+- Deployed execution: function build, routing, permissions, and secret resolution.
+
+Report each separately. Preserve the user's commit, deployment, and publication
+boundaries; passing tests do not authorize those effects.

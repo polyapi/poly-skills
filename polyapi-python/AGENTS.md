@@ -15,7 +15,7 @@ entry points. Detailed implementation guidance belongs in the local skills.
 ## Source of Truth
 
 1. This `AGENTS.md` for shared repo-wide rules
-2. Checked-in executable implementation and checked-in artefacts under `src/`
+2. Checked-in executable implementation and artefacts under the configured workflow root
 3. Relevant local skills under `./.agents/skills/`
 4. `CONVENTIONS.md`
 5. `README.md`
@@ -29,23 +29,26 @@ context only unless they match maintained checked-in patterns.
 ## Workflow Model
 
 - PolyAPI runtime flow is: schemas -> webhooks -> triggers -> functions.
-- Keep one workflow per `src/<workflow>/` folder.
-- Python repos commonly keep `server/`, `client/`, `types/`, `tests/`,
-  `artefacts/`, `deployment/`, and `scripts/` together under the workflow.
-- Put genuinely shared reusable code under `src/utilities/`.
-- Keep workflow-local helper scripts local to the workflow or utility they
-  support.
+- Resolve the workflow root from the project, for example `src/` or
+  `workflows/src/`, and keep each workflow in its own folder.
+- Add `server/`, `client/`, `tests/`, and supported `artefacts/` folders only
+  when needed. Do not add empty folders to match an example structure.
+- Keep shared deployed behavior under the configured utilities path. A
+  single-source-file deployer does not bundle neighboring modules; keep required
+  types/helpers inline or call deployed dependencies through the generated SDK.
+- Keep operator scripts outside deployable-function discovery paths.
 
 ## Artefact Contract
 
 - Keep Python code, JSON artefacts, and tests aligned in the same change.
-- Use `https://eu1.polyapi.io/swagger-json` as the source of truth for the JSON
-  field shape of platform-managed artefacts.
+- Use checked-in schemas and the local sync adapter for artefact formats.
+  Refresh platform contracts from the explicitly selected instance's
+  `/swagger-json`; do not assume one region describes every deployment.
 - Use checked-in repo patterns for file placement, naming, and workflow
   structure.
 - One public endpoint should map to one explicit webhook artefact.
-- Do not loosen schemas or introduce generic catch-all endpoints just to make a
-  migration pass.
+- Do not loosen schemas or introduce generic catch-all endpoints just to bypass
+  an incomplete contract.
 - Never commit or expose secret values. Record secret names only.
 
 ## Environment and Tooling
@@ -53,8 +56,9 @@ context only unless they match maintained checked-in patterns.
 - Match the Python version and toolchain already pinned by the target repo.
 - Use the repo's existing environment and package-management pattern
   (`venv`, `uv`, `pip`, `poetry`, or equivalent). Do not invent a new one.
-- Run the repo's checked-in generate, deploy, and test path after code or
-  artefact changes.
+- Run the repo's checked-in local checks after code or artefact changes.
+  Keep SDK generation, training, deployments, and live tests within their
+  explicitly authorized target and scope; local tests do not prove runtime behavior.
 - Do not upgrade `polyapi-python` or related dependencies casually.
 
 ## Task Entry Points
@@ -79,7 +83,8 @@ context only unless they match maintained checked-in patterns.
 
 1. Inspect a comparable maintained workflow before inventing new patterns.
 2. Edit code, artefacts, and tests together.
-3. Run the repo's checked-in generate, deploy, and test path.
+3. Run the repo's checked-in local checks; preview remote changes before an
+   authorized deployment and verify the selected target afterward.
 4. Update same-folder `OVERVIEW.md` when behaviour changes.
 5. Keep changes small, reviewable, and easy to verify.
 

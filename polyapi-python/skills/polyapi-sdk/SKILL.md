@@ -1,91 +1,63 @@
 ---
 name: polyapi-sdk
-description: Reference guide for correct PolyAPI Python setup, typing rules, deployment commands, and SDK quirks. Use before writing or deploying PolyAPI Python code during Mule migration.
+description: Use when implementing or reviewing PolyAPI Python functions, generated SDK calls, runtime types, Vari access, or deployment parsing failures.
 ---
 
-# Skill: PolyAPI SDK
+# PolyAPI Python SDK
 
-## Purpose
+Match the target project's pinned Python and `polyapi-python` versions and its
+existing install, generate, and deploy commands. Verify contracts against that
+SDK's source and generated callables, excluding credential stores. Do not infer
+Python behavior from another SDK or upgrade dependencies to hide a mismatch.
 
-Reference guide for writing correct PolyAPI Python code: setup, type system rules, deployment commands, and known SDK quirks that must be handled to avoid runtime and generation errors.
+## Function source and types
 
-## When to use
+- Use `TypedDict` from `typing_extensions`. Keep structured types local when
+  sibling generated types would introduce a circular import.
+- For Flow repos using inline metadata, declare a literal `polyConfig` typed as
+  `PolyClientFunction` or `PolyServerFunction` from `polyapi.typedefs`. Match its
+  name to the actual entrypoint and its context to the project's owned namespace.
+- Verify what the deployer uploads. Single-source-file deployment does not
+  package neighboring modules. Keep required types/helpers inline or call shared
+  deployed functions through the generated SDK; do not import their local files.
+- Install runtime dependencies using the project's dependency workflow. Preserve
+  native SDK dependency discovery; missing third-party imports or package metadata
+  must fail preflight. Generated-namespace parsing support is not a license to
+  stub runtime dependencies or invent SDK exports.
+- Match arguments and return types to the actual function and trigger contract.
+  An event handler may accept event, headers, and params; a security function can
+  return `bool`. Server functions do not universally take three arguments or
+  return `dict`.
 
-Load this skill before writing any PolyAPI Python code. The rules here are non-obvious and diverge from standard Python conventions in ways that cause silent failures if ignored.
-For exception ordering and logging behaviour, also follow `coding-standards`.
+## Generated calls and Vari
 
----
+- Inspect the exact generated signature and a maintained caller. Generated
+  API/server async calls commonly use `_async`; async client functions retain
+  their declared names. Await the callable the installed SDK actually exposes.
+- Preserve upstream identifiers and response field casing. Validate required
+  nested shapes rather than guessing alternative keys.
+- Fetch Vari by its exact generated context path. Decode JSON text only when
+  the generated return contract requires it, then validate the decoded shape.
+- Pass SECRET `.inject(...)` references unchanged to a supported generated
+  API/server boundary. Do not read, stringify, cache, or relay them through
+  another client function. Verify execution-mode support: direct API execution
+  must not be assumed to resolve injected references.
+- Do not cache OBSCURED, PARTIAL, or SECRET values. A bounded cache of NONE
+  configuration is appropriate only when its freshness requirements permit it.
+- For handled HTTP responses, preserve the repository's status-setting pattern.
+  `polyCustom.responseStatusCode` controls response metadata; a `statusCode` field
+  in a returned dictionary is a separate payload contract.
 
-## Python version
+## Verify and deploy
 
-Match the target repo's toolchain. The current GHA target repo uses Python 3.12. Verify with `python --version`.
+Use focused local tests for SDK arguments, awaited calls, response validation,
+Boolean security decisions, and opaque injection-reference identity. Run the
+project's checked-in checks. These do not prove live secret resolution or builds.
 
----
+Deploy only within the authorized target and scope, using the existing preview
+and identity, namespace, execution-key, OTP, and production safeguards. Regenerate
+against that same target when the deployed catalog changes; verify whether the
+repository's deploy command already does this. Keep live verification explicit.
 
-## TypedDict — critical rule
-
-**Always import `TypedDict` from `typing_extensions`, not from `typing`.**
-
-```python
-# CORRECT
-from typing_extensions import TypedDict, NotRequired, Literal, Any
-
-# WRONG — will cause type inference failures in the PolyAPI SDK
-from typing import TypedDict
-```
-
-Use Python 3.10+ syntax for all other annotations:
-
-```python
-list[str]           # not List[str]
-dict[str, Any]      # not Dict[str, Any]
-str | None          # not Optional[str]
-str | int           # not Union[str, int]
-```
-
----
-
-## Circular import pattern — critical rule
-
-**Never reference `poly.<context>.<Type>` inside a `TypedDict` definition when deploying to the same context.**
-
-The SDK generator creates `__init__.py` files that import all functions. Cross-referencing a type from a sibling function in the same context causes a circular import at SDK load time.
-
-Redeclare the `TypedDict` locally in each file that needs it. Do not import sibling SDK types from the same context.
-
----
-
-## Webhook-linked SFX contract — critical rule
-
-Any SFX linked to a webhook receives exactly three positional arguments:
-
-| Argument | Type | Contents |
-| --- | --- | --- |
-| `__event` | `dict` | Request body or event payload |
-| `headers` | `dict` | HTTP or trigger headers |
-| `params` | `dict` | Query and path parameters |
-
-When a shared HTTP router sits in front of the SFX, `headers` often includes keys such as `X-Http-Method`, `X-Original-Uri`, `Authorization`, and `X-Force-Log`.
-
----
-
-## SFX function shape
-
-Server functions must always return a `dict`. Follow `coding-standards` for exception ordering and logging, and follow any project-specific standards skill for the boundary payload and status-setting pattern.
-
----
-
-## Core rules
-
-- Install `polyapi-python`, run `python -m polyapi setup`, then `python -m polyapi generate`.
-- Re-run `python -m polyapi generate` after every deployment.
-- Import `TypedDict` from `typing_extensions`, never from `typing`.
-- Use Python 3.10+ type syntax for other annotations.
-- The `--context` must match the active repo's naming conventions.
-- Webhook-linked SFX handlers take exactly `__event`, `headers`, and `params`.
-- Server functions must return a `dict` and handle top-level failures cleanly.
-- Use `coding-standards` for exception handling structure, plus any project-specific standards skill for repo-specific boundary behaviour.
-
-## Reference
-
-See `./references/REFERENCE.md` for setup commands, deployment commands, type mapping, circular import examples, webhook-linked SFX conventions, and virtual environment notes.
+See [the reference](references/REFERENCE.md) for type mapping, packaging, SDK
+inspection, and command selection. Use `coding-standards` for error boundaries.

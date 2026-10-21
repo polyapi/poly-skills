@@ -1,229 +1,138 @@
-# coding-standards Reference
+# PolyAPI Python coding standards reference
 
-## Overview maintenance
-
-- Every workflow folder under `src/<workflow_name>/` should have an
-  up-to-date `OVERVIEW.md`.
-- Every utility folder under `src/utilities/<utility_name>/` should have an
-  up-to-date `OVERVIEW.md`.
-- When runtime behavior changes, refresh the overview in that same folder
-  before considering the task complete.
-- For new workflow or utility folders, create `OVERVIEW.md` as part of the
-  implementation work.
-- Formatting-only, comment-only, and non-runtime tooling changes can skip an
-  overview refresh.
-- Use the `generate-overview` skill to create or refresh the overview so the
-  file stays consistent with that skill's local reference.
-
-## Error handling examples
-
-### Catch the most specific exception type
-
-```python
-try:
-    data = json.loads(raw)
-except json.JSONDecodeError as error:
-    call_logger["error"]("Invalid JSON", {"error": str(error)})
-    return {"error": f"invalid JSON: {error}"}  # Adapt to the repo boundary contract
-
-try:
-    data = json.loads(raw)
-except Exception as error:
-    call_logger["error"]("Unexpected parsing failure", {"error": str(error)})
-    return {"error": "something went wrong"}  # Adapt to the repo boundary contract
-```
-
-### When to catch vs when to raise
+## Catch, translate, and preserve the boundary
 
 | Situation | Action |
 | --- | --- |
-| You can recover or provide a fallback | Catch, handle, return a repo-appropriate error payload |
-| You cannot recover but the caller can | Catch, add context, re-raise with `from` chaining |
-| Unexpected or programming error in helpers or client functions | Let it propagate |
-| Unexpected or programming error at the top-level boundary | Log it and return the repo's established error result |
-| Cleanup needed regardless of outcome | Use `finally` or `with` |
+| Expected failure with a valid recovery | Catch the specific exception and follow the established recovery contract |
+| Caller can handle the failure | Let it propagate, or add safe context |
+| Sensitive upstream error crossing a boundary | Translate to a fixed safe error and suppress the unsafe cause |
+| Unexpected helper or client error | Let the established top-level boundary handle it |
+| Public boundary handles an error | Log safe diagnostics and preserve the repository's payload and status contract |
+| Cleanup regardless of outcome | Use a context manager or `finally` |
 
-### Chain exceptions when re-raising
+Do not universally return dictionaries: security functions, event handlers, and
+ordinary functions can have different contracts. A returned status field does
+not substitute for the runtime's HTTP response metadata.
 
-```python
-try:
-    data = fetch()
-except urllib.error.URLError as error:
-    raise RuntimeError("failed to fetch config") from error
-```
-
-Use `raise ... from None` only when the original exception contains secrets or tokens.
-
-### Boundary return shape is repo-specific
-
-- Use the nearest sibling workflow or utility as the source of truth for the returned payload shape.
-- Some repos use simple HTTP payloads such as `{"message": "Bad request"}`.
-- Others use richer envelopes such as `{"status_code": 500, "success": False, "error": {"message": "..."}}`.
-- Pick one only if it matches the local pattern. Do not normalize the whole repo to a new envelope.
-
-Always log before returning an error result.
-This includes unexpected failures at the top-level boundary.
-
-### Order except clauses from most specific to least specific
+### JSON validation
 
 ```python
-try:
-    conn = oracledb.connect(...)
-except oracledb.DatabaseError as error:
-    call_logger["error"]("DB connection failed", {"error": str(error)})
-    return {"error": f"DB connection failed: {error}"}  # Adapt to the repo boundary contract
-except OSError as error:
-    call_logger["error"]("OS error", {"error": str(error)})
-    return {"error": f"OS error: {error}"}  # Adapt to the repo boundary contract
-except Exception as error:
-    call_logger["error"]("Unexpected failure", {"error": str(error)})
-    return {"error": "Unexpected failure"}  # Adapt to the repo boundary contract
-```
+import json
 
-### Subprocess error handling
 
-```python
-try:
-    proc = subprocess.run([...], timeout=60, capture_output=True, text=True)
-except subprocess.TimeoutExpired as error:
-    call_logger["error"]("Subprocess timed out", {"timeout": error.timeout})
-    return {"error": f"subprocess timed out after {error.timeout}s"}  # Adapt to the repo boundary contract
-except Exception as error:
-    call_logger["error"]("Subprocess failed", {"error": str(error)})
-    return {"error": str(error)}  # Adapt to the repo boundary contract
-
-if proc.returncode == 0 and proc.stdout.strip():
+def decode_config(raw: str) -> dict:
     try:
-        result = json.loads(proc.stdout.strip())
-    except json.JSONDecodeError as error:
-        call_logger["error"]("Subprocess returned invalid JSON", {"error": str(error)})
-        return {"error": f"subprocess returned invalid JSON: {error}"}  # Adapt to the repo boundary contract
+        value = json.loads(raw)
+    except json.JSONDecodeError:
+        raise ValueError("Configuration must contain valid JSON") from None
+    if not isinstance(value, dict):
+        raise ValueError("Configuration must be a JSON object")
+    return value
 ```
 
-### Network calls
+Validate required fields against the actual schema after decoding. Do not log
+`raw` or echo the parser error. The caller must decide how this failure maps to
+its response, status, and alert contract.
+
+### HTTP and network errors
 
 ```python
-try:
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        data = resp.read()
-except urllib.error.HTTPError as error:
-    raise RuntimeError(f"HTTP {error.code} from {url}: {error.reason}") from error
-except urllib.error.URLError as error:
-    raise RuntimeError(f"Network error: {error.reason}") from error
-except OSError as error:
-    raise RuntimeError(f"IO error: {error}") from error
-```
+import urllib.error
+import urllib.request
 
-### Resource cleanup
 
-```python
-try:
-    with zipfile.ZipFile(zip_path, "r") as archive:
-        archive.extractall(dest)
-except zipfile.BadZipFile as error:
-    raise RuntimeError(f"archive corrupt: {error}") from error
-finally:
+def read_response(request: urllib.request.Request) -> bytes:
     try:
-        os.remove(zip_path)
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return response.read()
+    except urllib.error.HTTPError as error:
+        raise RuntimeError(f"Upstream request failed with HTTP {error.code}") from None
+    except urllib.error.URLError:
+        raise RuntimeError("Upstream request could not be completed") from None
     except OSError:
-        pass
+        raise RuntimeError("Upstream response could not be read") from None
 ```
 
-### Quick reference
+This illustrates exception translation, not a replacement for generated SDK
+calls. Adapt exception types to the installed SDK and HTTP library. Do not
+include URL, reason, headers, or arbitrary response text in the replacement
+error. The existing logger may receive approved status/operation fields.
 
-| Scenario | Exception type |
+Use `raise ... from error` where the cause is known to be safe and aids diagnosis.
+Suppressing a cause does not sanitize a separate raw log or alert call.
+
+### Subprocess and resource failures
+
+Catch `subprocess.TimeoutExpired`, `subprocess.CalledProcessError`, `OSError`, or
+the library's specific database exception when appropriate. Log safe timeout,
+exit-code, or operation fields. Commands, stdout, stderr, file paths, and database
+exception messages may contain credentials or private data; do not forward them
+unchanged. Keep cleanup failures from replacing the primary failure unless the
+established integrity contract requires them to propagate.
+
+## Logging levels and content
+
+| Content | Level |
 | --- | --- |
-| Network download | `HTTPError` -> `URLError` -> `OSError` |
-| JSON parsing | `json.JSONDecodeError` |
-| File or OS operations | `OSError` |
-| Subprocess timeout | `subprocess.TimeoutExpired` |
-| DB operations | library-specific |
-| Missing dict key | `KeyError` |
+| Started, finished, skipped, or posted outcome | INFO |
+| Final counters and elapsed duration | INFO |
+| Sanitized business inputs, outputs, mapping, and decision details | DEBUG |
+| Retryable failure with the approved retry decision | WARN |
+| Terminal failure with safe operation/status and useful sanitized payload details | ERROR |
+| Routine transport chatter | Suppress |
 
-## Logging
+INFO is the operator timeline. Avoid request/response bodies, headers, full
+URLs, and transport internals there. DEBUG and ERROR should still contain useful
+business evidence when it is safe: selected records, relevant rules, response
+status, or approved request/response fields. Do not turn useful diagnostics into
+only booleans when a safe compact payload explains the failure.
 
-### Log level rules
+Select an allowed subset using known SDK/schema fields. Then use the project's
+sanitizer recursively for dictionaries and lists and cap size/depth before
+sending to the log sink. Credential keys can vary in case and spelling;
+sanitization must cover the actual contract. A token embedded in `message`, a
+URL, or exception text survives key-based redaction: replace or omit that field.
+Never assume arbitrary payloads become safe simply by naming them `sanitized`.
 
-| What | When | Level |
-| --- | --- | --- |
-| Workflow started or finished | Operator needs to follow a production timeline | INFO |
-| Success or skip outcome | State-changing or branch outcome needs completion evidence | INFO |
-| Final workflow counters | Completion of an integration workflow | INFO |
-| Performance timing | Integration latency measurement | INFO |
-| Input request payload | Payload drives external call or branching behaviour | DEBUG |
-| Response payload | Outcome requires body detail | DEBUG |
-| Mapping or decision logic | Conditional logic affects mapping or action | DEBUG |
-| Extracted candidates | Engineers must validate duplicate detection, matching, or filtering | DEBUG |
-| Retryable failure | Transient failure triggers retry handling | WARN |
-| Terminal or unexpected failure | Failed operation or unexpected condition, with sanitized request/response payloads when available | ERROR |
-| Transport internals | HTTP client connection noise with no business value | Suppress |
-
-### INFO vs DEBUG boundary
-
-INFO logs are the high-volume operator timeline. Keep them compact and focused
-on what happened, where it happened, the business entity involved, the
-success/failure outcome, counters, and elapsed duration. Avoid full URLs,
-headers, request bodies, response bodies, payload fragments, credential
-diagnostics, and low-level transport details at INFO.
-
-DEBUG logs are for human troubleshooting. They should be payload-centric:
-include the outbound request payload, the inbound response payload, the exact
-records evaluated, the selected record, rules or thresholds, and the final
-decision reason when those details explain why the workflow acted.
-
-ERROR logs should also be troubleshooting-ready. When a failed operation has an
-available request payload, upstream response body, upstream status, retry
-decision, or parsed error payload, include the sanitized useful parts directly
-on the ERROR log. Avoid metadata-only errors when the payload is needed to
-understand why the operation failed.
-
-Prefer fewer rich DEBUG entries over many metadata-only entries. Do not log
-only derived booleans or counts when the actual compact payload is needed to
-replay or validate the decision.
-
-### Log format
+For a logger with a message/context-dictionary interface, safe metadata examples
+are:
 
 ```python
-call_logger["debug"]("Input payload", {"payload": payload})
-call_logger["info"]("Member balance retrieved", {"member_id": member_id, "status": 200})
-call_logger["warn"]("Retry attempt", {"attempt": 2, "reason": str(error)})
-call_logger["error"]("Downstream call failed", {"error": str(error), "url": url})
+call_logger["info"]("Workflow finished", {"outcome": "success", "count": 3})
+call_logger["warn"]("Retry scheduled", {"operation": "fetch_advice", "attempt": 2})
+call_logger["error"]("Upstream request failed", {"operation": "fetch_advice", "status": 503})
 ```
 
-### Logging rules
+Use the actual project's interface and verified fields. Add safe payload subsets
+when they materially explain the error; do not copy raw exceptions or URLs.
 
-- Always log before returning an error result.
-- Do not log secrets, tokens, or passwords at any level.
-- Mask credential-like keys such as `token`, `authorization`, `appKey`,
-  `api_key`, `password`, and `secret` before logging payloads.
-- Cap very large strings and lists before they reach Datadog or the shared log
-  sink.
-- Use DEBUG payload logging when the integration has materially complex
-  conditional behaviour, matching, duplicate detection, or external payload
-  construction.
-- Keep DEBUG payloads business-focused. Do not include low-level HTTP transport
-  internals unless they are the bug being investigated.
-- For ERROR logs, include sanitized request/response payloads whenever they
-  materially help troubleshoot and are available in the current scope. If the
-  full payload is too large, include a compacted version plus the exact status,
-  operation name, and retry decision.
-- If the repo uses alerting on fatal boundary paths, preserve that alert call before returning.
+## Notification containment
 
-### Payload-shape and decision logging checklist
+Preserve whether the existing alert is required or best-effort. For best-effort
+alerts, use a fixed safe alert payload and isolate notification failures:
 
-When adding or refactoring workflow logging:
+```python
+async def notify_failure(notify, call_logger) -> None:
+    try:
+        await notify({"message": "Workflow failed", "operation": "process_event"})
+    except Exception:
+        call_logger["error"]("Failure notification could not be delivered", {})
+```
 
-1. Identify the workflow milestones that belong at INFO.
-2. Define stable correlation fields before adding log calls.
-3. Log request and response payloads at DEBUG for external boundaries.
-4. Log extracted candidates and selected records at DEBUG for matching,
-   duplicate detection, or filtering.
-5. Log the rules, thresholds, and reason for important branch decisions.
-6. Avoid generic field-name guessing helpers. Use the exact SDK type,
-   checked-in implementation contract, or known upstream payload shape.
-7. If the expected shape is absent, fail clearly or return the local controlled
-   integration error instead of silently falling back to another shape.
-8. Suppress noisy third-party loggers such as HTTP transport libraries when
-   they pollute workflow logs.
-9. Add or update tests for exact payload paths and important structured log
-   fields when logs are part of the debugging contract.
+Use the real generated notification signature, not this illustrative callable,
+and ensure the logger itself is safe/non-throwing or handled at that boundary.
+This broad catch belongs around the secondary best-effort effect, not around all
+business logic. A global error handler must preserve its controlled result even
+when notification delivery fails. Do not launch an unawaited alert task.
+
+## Review checklist
+
+- Exact data shapes and SDK calls; no guessed alternate field names.
+- Specific handled failures and the correct public payload/status contract.
+- Useful diagnostics without credentials in nested data, text, URLs, or causes.
+- Best-effort alert failure does not replace the original error result.
+- No retry of side effects without an idempotency/retry contract.
+- Focused tests cover the changed observable behavior with synthetic data.
+- The owning workflow or utility overview matches changed runtime behavior.
+- Verification states distinguish local tests from actual deployed evidence.

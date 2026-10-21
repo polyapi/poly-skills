@@ -1,52 +1,58 @@
 ---
 name: coding-conventions
-description: Defines PolyAPI Python naming and file-layout conventions for functions, artefacts, and related files. Use before naming or reviewing Python migration artefacts.
+description: Use when naming or renaming PolyAPI Python functions, workflow files, contexts, artefacts, or references to deployed resources.
 ---
 
-# Skill: Python Coding Conventions
+# PolyAPI Python coding conventions
 
-## Purpose
+Read the active repository's conventions and maintained examples. Distinguish
+source filename, Python entrypoint, deployed resource identity, and external SDK
+identifier before changing a name; they are not interchangeable.
 
-Define reusable Python naming and file-layout rules for PolyAPI artefacts
-without baking in project-specific namespaces, slug tokens, or credential
-schemes.
+## Naming rules
 
-## When to use
+- Use snake_case for authored Python modules, workflow directories, functions,
+  and JSON artefact filenames. Use `_sfx.py` / `_cfx.py` for deployable files when
+  those are the repository's discovery conventions, and `test_<behavior>.py` for
+  tests.
+- Keep `polyConfig.name` aligned with the entrypoint where inline metadata is
+  used. Function names and dotted context segments must be valid Python
+  identifiers, not keywords. Avoid identity collisions in the same context.
+- Keep project-owned contexts within the configured namespaces. Do not invent
+  organization, customer, or regional prefixes for reusable examples.
+- Preserve upstream API fields, OpenAPI operation IDs, generated callable names,
+  generated schema filenames, and platform category names. For example,
+  `CreateJobDto.schema.json`, `getRandomAdvice`, and `ai-functions` are not
+  snake_case cleanup targets.
+- Preserve standard documentation names and hyphenated skill folder names.
+- Artefact suffixes such as `_hook`, `_trigger`, `_vari`, `_job`, and `_tabi` are
+  useful conventions, not universal platform requirements. Follow the target
+  repo; category directories already identify the resource kind.
 
-Use this skill before naming Python functions, webhooks, triggers, variables,
-tabis, jobs, or related files. If the target repo has a project-specific
-standards skill, load that as an overlay.
+| Locally authored file | Example |
+| --- | --- |
+| Server function | `process_event_sfx.py` |
+| Client function | `fetch_advice_cfx.py` |
+| Workflow test | `test_process_event.py` |
+| Webhook artefact | `motd_hook.json` |
+| Variable artefact | `service_config.json` |
 
----
+A separate `_types.py` module is appropriate only if its consumer can import or
+bundle it. For a single-source-file deployer, keep runtime types inline; folder
+organization does not imply packaging support.
 
-## Core rules
+## Rename safely
 
-- Use `snake_case` for Python files, JSON artefact files, and artefact base names.
-- Keep deployed names deterministic and readable; derive them from the workflow or endpoint purpose instead of ad-hoc abbreviations.
-- Do not create duplicate deployed names in the same context or duplicate entrypoints that will collide in the generated SDK or runtime.
-- Context segments and function names must be valid identifiers. Do not use Python keywords as names or context segments.
+Search affected code and artefacts for the old filename and identity, excluding
+secret files and SDK credential stores. Check generated calls, portable refs,
+security functions, jobs/triggers, AI tools, schemas, tests, and documentation.
 
----
+For a filename-only cleanup, preserve deployed identity fields and external
+webhook slugs. A changed `polyConfig.name`, context, or JSON identity can create a
+new resource or affect orphan detection. Treat that as an explicit migration,
+including callers and dependent resources. Spec filenames may determine trained
+contexts when the training command uses a `{file}` substitution.
 
-## File naming (Python)
-
-| Artefact type | File suffix | Example |
-|---|---|---|
-| Server function | `_sfx.py` | `get_member_balance_sfx.py` |
-| Client function | `_cfx.py` | `sdk_call_with_retry_cfx.py` |
-| Types file | `_types.py` | `member_info_types.py` |
-| Webhook artefact | `_hook.json` | `get_member_balance_hook.json` |
-| Trigger artefact | `_trigger.json` | `get_member_balance_trigger.json` |
-| Variable artefact | `_vari.json` | `currency_config_vari.json` |
-| Job artefact | `_job.json` | `sync_rates_job.json` |
-| Tabi artefact | `_tabi.json` | `currency_map_tabi.json` |
-
-All Python files use `snake_case`. All JSON artefact file names use `snake_case`.
-
----
-
-## Rules
-
-- Never use camelCase for Python files or artefact file names.
-- Keep the deployed function name, file base name, and artefact base name aligned where practical.
-- For project-specific namespace families, slug tokens, logger contexts, credential namespaces, or webhook/trigger pairing rules, follow the active repo's standards overlay.
+Run the repository's discovery/reference checks and verify documentation links.
+Do not deploy or delete an old resource just to finish a local rename. Use
+`artefacts-usage` for ownership and `polyapi-sdk` for generated-call constraints.
