@@ -37,7 +37,8 @@ Cover relevant items without empty sections:
 - SDK dependencies and exact resource contexts, with important client/helper
   behavior explained.
 - Configuration names and secrecy levels, injection boundaries, and intended
-  enabled state of jobs or streams. Use placeholders, never secret values.
+  enabled state of jobs or streams. Preserve exact non-secret names and verified
+  defaults; use placeholders for secret values.
 - External effects, retry/idempotency behavior, operational limits, and end states.
 - Focused local checks and separately labeled opt-in runtime verification.
 

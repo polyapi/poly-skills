@@ -33,6 +33,18 @@ Prefer the repository's target-bound Flow/deploy command when present. It may
 also enforce ownership and production checks and regenerate the SDK. Do not
 bypass those controls by switching to a bare native deployment command.
 
+For a project that already uses the native CLI, the deployment form is:
+
+```bash
+python -m polyapi function add get_tags ./server/get_tags_sfx.py --context example.tags --server
+```
+
+This is a remote write, not a validation command. Substitute the actual
+entrypoint, file, and authorized context; use `--client` instead for a client
+function. Verify these arguments with the pinned CLI's help. Native `function
+add` in `0.3.20.dev4` regenerates by default unless `--skip-generate` is used;
+do not add an unnecessary second generation step.
+
 ## Types and source packaging
 
 | Schema or return type | Python annotation |
@@ -41,22 +53,37 @@ bypass those controls by switching to a bare native deployment command.
 | `number` | `float` |
 | `string` | `str` |
 | `boolean` | `bool` |
-| `array` | `list[ItemType]` |
+| `array` | `List[ItemType]` from `typing`, or `list[ItemType]` when parser support is verified |
 | `object` | a local `TypedDict` or the supported dictionary contract |
-| `void` (SDK no-return type) | `None` |
+| `void` (SDK no-return type) | Verify parser support; a Python `None` annotation alone may not emit `void` |
 
 Use annotations supported by the pinned Python/SDK pair. Import `TypedDict`
 from `typing_extensions`; do not substitute `typing.TypedDict` without verifying
 that the pinned SDK parser supports it. Recheck parser behavior during upgrades.
 
-For single-file deployment, define types in the submitted file:
+Python syntax validation alone does not prove the deployed type contract. In
+`polyapi-python 0.3.20.dev4`, the top-level signature parser reads `list[str]`,
+`dict[str, str]`, `str | None`, and a `None` return as `Any`; it recognizes
+`List[str]`, `Dict[str, str]`, and named local types. Inspect emitted argument
+and return types and schemas for every boundary shape, including optional and
+no-return types.
+This limitation concerns function signatures; fields inside `TypedDict` use a
+different schema path. Do not rewrite all internal Python annotations.
+
+For single-file deployment, define required types in the submitted file. This
+example uses the supported array annotation at the function boundary:
 
 ```python
+from typing import List
 from typing_extensions import TypedDict
 
 
 class RequestPayload(TypedDict):
-    name: str
+    tags: List[str]
+
+
+def get_tags(payload: RequestPayload) -> List[str]:
+    return payload["tags"]
 ```
 
 Do not import a neighboring `_types.py` unless the actual deployer packages it.

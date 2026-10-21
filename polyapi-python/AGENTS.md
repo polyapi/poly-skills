@@ -41,9 +41,10 @@ context only unless they match maintained checked-in patterns.
 ## Artefact Contract
 
 - Keep Python code, JSON artefacts, and tests aligned in the same change.
-- Use checked-in schemas and the local sync adapter for artefact formats.
-  Refresh platform contracts from the explicitly selected instance's
-  `/swagger-json`; do not assume one region describes every deployment.
+- Use checked-in schemas and a local sync adapter when present. Otherwise,
+  derive platform payloads from the explicitly selected instance's
+  `/swagger-json` or a saved contract for that target; do not invent a Flow
+  dependency or assume one region describes every deployment.
 - Use checked-in repo patterns for file placement, naming, and workflow
   structure.
 - One public endpoint should map to one explicit webhook artefact.

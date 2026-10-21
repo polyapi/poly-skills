@@ -83,8 +83,9 @@ State their working directory and use the project's documented shell. Separate:
 - opt-in runtime checks or mutations that need explicit authorization.
 
 Link setup/CLI guides instead of duplicating secrets setup or full deployment
-procedures. Use placeholders for config names/values; no region or customer is
-implicitly the default target.
+procedures. Preserve exact non-secret configuration names and verified defaults.
+Use placeholders for secret values and label target-specific examples; no region
+or customer is implicitly the default target.
 
 ## Evidence and finishing checks
 

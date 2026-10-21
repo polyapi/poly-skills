@@ -34,6 +34,8 @@ Reuse the project's structured logger. Keep INFO to compact milestones,
 outcomes, counters, and durations. Use DEBUG for details that explain business
 branching and mapping. At ERROR, include useful sanitized request/response
 fields, upstream status, operation, and retry decision when available.
+Preserve the project's execution/request correlation fields across related logs
+and alerts so the operator can follow one invocation.
 
 DEBUG is not permission to expose secrets. Select safe fields before logging;
 never log arbitrary exceptions, credential headers, injection references, or raw

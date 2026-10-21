@@ -36,11 +36,14 @@ for one-off operator scripts outside deployable-function discovery.
 
 ## Contract selection
 
-The selected instance's `/swagger-json` describes its platform API. Checked-in
-schemas and Flow transformations describe local validation and translation to
-that API. On mismatch, identify the selected target/version and refresh through
-the supported command with approval for the effect; do not silently switch hosts
-or loosen schemas. No region is the universal contract source.
+The selected instance's `/swagger-json` describes its platform API. When a Flow
+or other adapter exists, its checked-in schemas and transformations describe
+local validation and translation to that API. Without an adapter, use the
+selected platform contract or its saved copy directly; portable reference
+objects are not automatically valid platform payloads. Do not add a deployer or
+schema-refresh wrapper merely to use this skill. On mismatch, identify the
+target/version and use the existing refresh path if available, within the
+authorized scope. Do not silently switch hosts or loosen schemas.
 
 Common mappings, to verify against that contract:
 

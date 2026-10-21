@@ -20,8 +20,10 @@ reference resolution and transformations before treating an example as a contrac
   spellings such as `ai-functions`. Training inputs belong in `specs/` or the
   repository's design-source area; a normal sync need not train them.
 - Use checked-in validators for local checks. Refresh them only through the
-  repository's supported command and explicitly selected instance's
-  `/swagger-json` or an approved saved contract. Do not assume a region.
+  repository's supported command when available, using the explicitly selected
+  instance's `/swagger-json` or an approved saved contract. If no adapter or
+  validator exists, use that platform contract directly; do not invent Flow-only
+  fields or require new tooling. Do not assume a region.
 - Keep schemas, webhook authentication/security, trigger arguments, function
   contracts, response statuses, and enabled states aligned. Preserve existing
   public endpoint contracts; do not weaken validation or invent a catch-all

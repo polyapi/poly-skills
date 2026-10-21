@@ -14,6 +14,9 @@ Python behavior from another SDK or upgrade dependencies to hide a mismatch.
 
 - Use `TypedDict` from `typing_extensions`. Keep structured types local when
   sibling generated types would introduce a circular import.
+- Check the parser's emitted argument and return schemas, not just Python syntax.
+  Some SDK versions silently widen `list[T]`, `dict[K, V]`, and union annotations
+  to `Any`; use verified boundary annotations as described in the reference.
 - For Flow repos using inline metadata, declare a literal `polyConfig` typed as
   `PolyClientFunction` or `PolyServerFunction` from `polyapi.typedefs`. Match its
   name to the actual entrypoint and its context to the project's owned namespace.
@@ -54,10 +57,11 @@ Use focused local tests for SDK arguments, awaited calls, response validation,
 Boolean security decisions, and opaque injection-reference identity. Run the
 project's checked-in checks. These do not prove live secret resolution or builds.
 
-Deploy only within the authorized target and scope, using the existing preview
-and identity, namespace, execution-key, OTP, and production safeguards. Regenerate
-against that same target when the deployed catalog changes; verify whether the
-repository's deploy command already does this. Keep live verification explicit.
+Deploy only within the authorized target and scope. Preserve the repository's
+existing preview, identity, namespace, execution-key, OTP, and production
+safeguards where provided; do not add Flow as a prerequisite for a native-CLI
+project. Regenerate against the same target when the deployed catalog changes;
+verify whether the deploy command already does this. Keep live verification explicit.
 
 See [the reference](references/REFERENCE.md) for type mapping, packaging, SDK
 inspection, and command selection. Use `coding-standards` for error boundaries.
