@@ -16,10 +16,13 @@ Read applicable project instructions and conventions, then inspect:
 4. Relevant schemas, Vari, Tabi, AI/tool bindings, Canopy configuration, and specs.
 5. Focused tests and checked-in commands confirming the intended behavior.
 
-Use the language and naming patterns the project actually deploys. Server
-entrypoints normally define flows; client-only or utility folders can describe
-their callable surface and known consumers. Do not invent a deployed trigger
-because none is present. Label an inferred caller or unknown setup explicitly.
+Use the language and naming patterns the project actually deploys. Common
+discovery hints are `server/*_sfx.py` / `server/*SFX.ts` and
+`client/*_cfx.py` / `client/*CFX.ts`; verify them against project discovery rules
+and metadata so differently named entrypoints are not missed. Server entrypoints
+normally define flows; client-only or utility folders can describe their callable
+surface and known consumers. Do not invent a deployed trigger because none is
+present. Label an inferred caller or unknown setup explicitly.
 
 Treat the current overview as navigation, not proof. Inspect supported source
 and configuration examples; exclude environment files, credential stores,
@@ -67,6 +70,18 @@ For each significant step, explain its purpose, function/resource identity when
 known, important rules and failures, and clickable source/artefact links. An
 inferred caller has no implementation link to invent. The chart and text should
 describe the same flow and end states.
+
+When a diagram is present, reuse its node IDs in the step details so a reader can
+trace a branch or failure to its implementation. This compact table is a useful
+default; equivalent labeled prose is fine:
+
+| Step ID | Role and behavior | Function or resource | Sources |
+| --- | --- | --- | --- |
+| Diagram node ID | Server/client/helper logic, resource operation, or caller; include the business rule and failure outcome | Exact context/name when known | Relative links to implementing code and relevant artefacts |
+
+Link all files that jointly implement a significant step. Label external or
+inferred callers explicitly when no local implementation exists. A short utility
+without a diagram does not need artificial step IDs.
 
 ## Links and commands
 

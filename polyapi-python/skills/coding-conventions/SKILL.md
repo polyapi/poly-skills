@@ -12,9 +12,8 @@ identifier before changing a name; they are not interchangeable.
 ## Naming rules
 
 - Use snake_case for authored Python modules, workflow directories, functions,
-  and JSON artefact filenames. Use `_sfx.py` / `_cfx.py` for deployable files when
-  those are the repository's discovery conventions, and `test_<behavior>.py` for
-  tests.
+  and JSON artefact filenames. Choose descriptive names from the workflow or
+  endpoint purpose; avoid ad-hoc abbreviations.
 - Keep `polyConfig.name` aligned with the entrypoint where inline metadata is
   used. Function names and dotted context segments must be valid Python
   identifiers, not keywords. Avoid identity collisions in the same context.
@@ -25,17 +24,35 @@ identifier before changing a name; they are not interchangeable.
   `CreateJobDto.schema.json`, `getRandomAdvice`, and `ai-functions` are not
   snake_case cleanup targets.
 - Preserve standard documentation names and hyphenated skill folder names.
-- Artefact suffixes such as `_hook`, `_trigger`, `_vari`, `_job`, and `_tabi` are
-  useful conventions, not universal platform requirements. Follow the target
-  repo; category directories already identify the resource kind.
+- For new related resources, keep the function, file, webhook, and trigger base
+  names aligned where practical. For example, `process_event_sfx.py`,
+  `process_event_hook.json`, and `process_event_trigger.json` share a clear base.
+  Preserve existing deployed identities during filename-only changes.
 
-| Locally authored file | Example |
-| --- | --- |
-| Server function | `process_event_sfx.py` |
-| Client function | `fetch_advice_cfx.py` |
-| Workflow test | `test_process_event.py` |
-| Webhook artefact | `motd_hook.json` |
-| Variable artefact | `service_config.json` |
+## Recommended filename defaults
+
+Follow explicit project conventions and discovery rules first. Where the project
+has no convention for a file kind, use these defaults consistently. These are
+recommended local names, not universal platform requirements or a reason to
+rename existing files. A repo that uses descriptive unsuffixed JSON names can
+keep that convention.
+
+| Locally authored file | Pattern | Example |
+| --- | --- | --- |
+| Server function | `<name>_sfx.py` | `process_event_sfx.py` |
+| Client function | `<name>_cfx.py` | `normalize_event_cfx.py` |
+| Importable types module | `<name>_types.py` | `event_types.py` |
+| Workflow test | `test_<behavior>.py` | `test_process_event.py` |
+| Webhook artefact | `<name>_hook.json` | `process_event_hook.json` |
+| Trigger artefact | `<name>_trigger.json` | `process_event_trigger.json` |
+| Variable artefact | `<name>_vari.json` | `delivery_options_vari.json` |
+| Job artefact | `<name>_job.json` | `replay_events_job.json` |
+| Tabi artefact | `<name>_tabi.json` | `event_receipts_tabi.json` |
+| OpenAPI training input | `<name>_spec.json` | `event_provider_spec.json` |
+| Other authored resource JSON | `<name>.json` in its category | `event_console.json` |
+
+Filename suffixes do not prescribe deployed resource names. Preserve the
+identity fields required by the target contract and repository.
 
 A separate `_types.py` module is appropriate only if its consumer can import or
 bundle it. For a single-source-file deployer, keep runtime types inline; folder

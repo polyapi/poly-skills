@@ -3,8 +3,9 @@
 ## Workflow placement
 
 Resolve `<workflow_root>` from the active repository (`src/`, `workflows/src/`,
-or another configured root). This is a menu of supported locations, not a list
-of empty directories to create:
+or another configured root). Use these recommended filenames when the project
+has no convention for that file kind; established project naming takes precedence.
+Create only the files and directories the workflow needs:
 
 ```text
 <workflow_root>/<workflow>/
@@ -13,26 +14,31 @@ of empty directories to create:
   client/<name>_cfx.py
   tests/test_<behavior>.py
   artefacts/
-    schemas/
-    webhooks/
-    triggers/
-    vari/
-    jobs/
-    tabi/
-    ai-functions/
-    canopy/
-    subscriptions/
-    specs/
+    schemas/<name>.json
+    webhooks/<name>_hook.json
+    triggers/<name>_trigger.json
+    vari/<name>_vari.json
+    jobs/<name>_job.json
+    tabi/<name>_tabi.json
+    ai-functions/<name>.json
+    canopy/<name>.json
+    subscriptions/<name>.json
+    specs/<name>_spec.json
 ```
 
 Use the same relevant structure under `<workflow_root>/utilities/<utility>/`
 for shared deployed behavior. Supported resource kinds come from the local
 sync tool. Keep inactive design examples outside its discovery paths.
+These filenames describe authored resources; preserve generated schema filenames
+and deployed identity fields. Use `coding-conventions` for naming and renames.
 
-A `types/` folder does not make its modules deployable. If the deployer uploads
-one source file, keep required runtime types/helpers in that file or reuse a
-deployed function via the SDK. Follow the repository's established location
-for one-off operator scripts outside deployable-function discovery.
+A `types/<name>_types.py` module is useful only when its consumer can import or
+bundle it. If the deployer uploads one source file, keep required runtime
+types/helpers in that file or reuse a deployed function via the SDK.
+Where the repository supports workflow-local operator files, examples include
+`deployment/<workflow>.sh` and `scripts/<one_off_task>.py`; use its actual command
+shell and keep these outside deployable-function discovery. Do not create empty
+folders or treat operator scripts as runtime dependencies.
 
 ## Contract selection
 
@@ -132,4 +138,6 @@ separate reviewed effects, with dependency checks and independent readback.
 Record purpose, entrypoints, resources, configuration names/secrecy levels,
 external effects, enabled states, failure behavior, and focused verification.
 Include migration provenance or parity notes only when a migration is actually
-part of the project. Distinguish local checks from deployed evidence.
+part of the project: identify the source integration, preserved behavior, and
+known gaps or deliberate deviations. Distinguish local checks from deployed
+evidence.
