@@ -106,7 +106,8 @@ subscriptions, jobs, and other generated PolyAPI constructs.
 When code needs a new generated path:
 
 1. Create or update the checked-in artefact.
-2. Ask for explicit approval for the exact non-production deploy command.
+2. Confirm existing user authorization covers the deployment target and scope;
+   obtain missing authorization before executing the deploy command.
 3. Deploy the artefact with the approved `ENVPATH`.
 4. Regenerate the SDK from the same PolyAPI environment.
 5. Use the generated `poly.*`, `vari.*`, `tabi.*`, or `schemas.*` path

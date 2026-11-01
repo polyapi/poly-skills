@@ -2,13 +2,18 @@
 
 ## Setup commands
 
+Use the target repo's pinned SDK, environment manager and existing connection.
+The commands below are native SDK entry points, not instructions to reinstall
+or upgrade an already configured project. Use the repo's `uv`, `venv`, or other
+documented runner; Flow may already perform SDK regeneration after deployment.
+
 ```bash
-pip install polyapi-python
 python -m polyapi setup
 python -m polyapi generate
 ```
 
-After any deployment, re-run `python -m polyapi generate` to refresh the local SDK.
+After catalogue changes, regenerate on the same target if the deployment
+command has not already done so.
 
 ## Python version
 

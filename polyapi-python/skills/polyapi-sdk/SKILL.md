@@ -1,6 +1,6 @@
 ---
 name: polyapi-sdk
-description: Reference guide for correct PolyAPI Python setup, typing rules, deployment commands, and SDK quirks. Use before writing or deploying PolyAPI Python code during Mule migration.
+description: Use when configuring the native PolyAPI Python SDK, checking generated types or function deployment, or using Flow resource cleanup and server-function logs.
 ---
 
 # Skill: PolyAPI SDK
@@ -77,8 +77,10 @@ Server functions must always return a `dict`. Follow `coding-standards` for exce
 
 ## Core rules
 
-- Install `polyapi-python`, run `python -m polyapi setup`, then `python -m polyapi generate`.
-- Re-run `python -m polyapi generate` after every deployment.
+- Use the active repo's pinned native SDK and environment manager; reuse its
+  configured connection instead of reinstalling or upgrading the SDK.
+- Regenerate after catalogue changes unless the repo's Flow command already
+  does so. Keep generation and deployment on the same target.
 - Import `TypedDict` from `typing_extensions`, never from `typing`.
 - Use Python 3.10+ type syntax for other annotations.
 - The `--context` must match the active repo's naming conventions.
@@ -89,3 +91,16 @@ Server functions must always return a `dict`. Follow `coding-standards` for exce
 ## Reference
 
 See `./references/REFERENCE.md` for setup commands, deployment commands, type mapping, circular import examples, webhook-linked SFX conventions, and virtual environment notes.
+
+## Flow Operations
+
+For scoped resource deletion or server-function log retrieval, read
+[`references/FLOW.md`](./references/FLOW.md). It covers the current Python
+Flow interface, exact/descendant contexts, preview/apply boundaries, deletion
+verification and log pagination. Discover the target repo's available commands
+before using these template examples.
+
+For OpenAPI/Swagger API Function training, use `api-function-training` when
+installed. Its dedicated workflow covers operation selection, saved models,
+plain-text descriptions and native SDK verification. A copied SDK skill does
+not require installing Flow into a native-CLI project.

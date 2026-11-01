@@ -19,6 +19,12 @@ Curated skills and agents for PolyAPI project implementations. It covers a wide 
 
 See [CATALOG.md](./CATALOG.md) for the full skill and pack catalog.
 
+API Function training has dedicated skills for
+[Python](./polyapi-python/skills/api-function-training/SKILL.md) and
+[TypeScript](./polyapi-typescript/skills/api-function-training/SKILL.md).
+Each language pack's `polyapi-sdk` skill includes Flow resource cleanup and
+server-function log retrieval guidance.
+
 ## Using In Projects
 
 To use a skill in another repo, copy the full relevant skill folder into that
