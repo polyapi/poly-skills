@@ -2,22 +2,26 @@
 
 ## Setup commands
 
-Use the target repo's pinned SDK, environment manager and existing connection.
-The commands below are native SDK entry points, not instructions to reinstall
-or upgrade an already configured project. Use the repo's `uv`, `venv`, or other
-documented runner; Flow may already perform SDK regeneration after deployment.
+Use the repo's pinned environment and package manager first. The native CLI
+examples below apply when that is the repo's chosen workflow; use its existing
+Flow or other deploy commands where configured. Setup, generation, and deployment
+require an explicitly selected, authorized target. Reuse the target repo's
+configured connection and SDK instead of reinstalling or upgrading them. Use
+the repo's `uv`, `venv`, or other documented runner; Flow may already perform
+SDK regeneration after deployment.
 
 ```bash
 python -m polyapi setup
 python -m polyapi generate
 ```
 
-After catalogue changes, regenerate on the same target if the deployment
-command has not already done so.
+Refresh the SDK after catalog changes unless the deploy command already does so.
+Native `function add` in `0.3.20.dev4` regenerates unless `--skip-generate` is used;
+generate and deploy against the same target.
 
 ## Python version
 
-Match the target repo's toolchain. The current GHA target repo uses Python 3.12.
+Match the target repo's pinned Python and SDK versions.
 
 ## Type mapping reference
 
@@ -27,20 +31,26 @@ Match the target repo's toolchain. The current GHA target repo uses Python 3.12.
 | `number` | `float` |
 | `string` | `str` |
 | `boolean` | `bool` |
-| `array` | `list` |
-| `object` | `dict` |
-| `void` | `None` |
+| `array` | `List[ItemType]` from `typing`, or `list[ItemType]` with verified parser support |
+| `object` | local `TypedDict` or a verified dictionary annotation |
+| `void` | Verify the emitted schema; `None` alone may parse as `Any` |
+
+In `0.3.20.dev4`, top-level `list[str]`, `dict[str, str]`, `str | None`, and a
+`None` return parse as `Any`; `List[str]`, `Dict[str, str]`, and named local types
+are recognized. Check emitted argument/return schemas. `TypedDict` fields follow
+a separate schema path.
 
 ## Deployment commands
 
 ```bash
-python -m polyapi function add <function_name> <file>.py --context <context.name> --server
-python -m polyapi function add <function_name> <file>.py --context <context.name> --client
+python -m polyapi function add process_event ./server/process_event_sfx.py --context example.events --server
+python -m polyapi function add normalize_event ./client/normalize_event_cfx.py --context example.events --client
 ```
 
 ## Webhook-linked SFX contract
 
-Any webhook-linked SFX receives exactly:
+A common webhook-trigger mapping passes these arguments. Verify the actual
+contract; this is not every server or security function's signature:
 
 | Argument | Type | Notes |
 | --- | --- | --- |
@@ -61,9 +71,13 @@ AttributeError: partially initialized module 'polyapi.poly' has no attribute 'ut
 (most likely due to a circular import)
 ```
 
-**Fix:** redeclare the `TypedDict` locally in each file that needs it.
+**Fix:** redeclare the `TypedDict` locally in each file that needs it. A
+single-file deployer needs required runtime types/helpers in the submitted file
+unless it explicitly supports bundling neighboring modules.
 
 ```python
+from typing_extensions import TypedDict
+
 class PlatformLoggingConfig(TypedDict):
     site: str
     api_key: str
@@ -80,7 +94,10 @@ python -m polyapi generate
 
 ## SFX function shape
 
-Server functions must always return a `dict`. Use `coding-standards` for exception ordering and logging, and do not let an unhandled exception escape the top-level handler.
+Match the actual return contract: a security function can return `bool`, and other
+functions may return supported scalar or structured types. The HTTP-handler
+example below returns a `dict`; use `coding-standards` for exception ordering,
+logging, and boundary behavior.
 
 ```python
 async def my_function_sfx(__event: dict, headers: dict, params: dict) -> dict:

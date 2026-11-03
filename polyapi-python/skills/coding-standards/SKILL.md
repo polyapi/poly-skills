@@ -9,6 +9,9 @@ compatibility: Designed for PolyAPI Python work. Examples assume Python 3.12+ an
 
 # Skill: Coding Standards
 
+Resolve the workflow root from the active repo first. In the rules and examples
+below, substitute that root for `src/` (for example, `workflows/src/`).
+
 ## Purpose
 
 Enforce reusable error handling, logging, and overview-maintenance standards

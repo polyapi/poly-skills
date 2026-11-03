@@ -1,5 +1,13 @@
 # artefacts-usage Reference
 
+The layout below gives recommended defaults. Follow existing filenames for
+every resource, including unsuffixed JSON. Create only needed folders; omit
+`types/` when runtime types must be inline for single-file deployment. Keep
+one-off scripts outside deployable-function discovery.
+
+Resolve the workflow root from the active repo first. In the rules and examples
+below, substitute that root for `src/` (for example, `workflows/src/`).
+
 ## Folder layout for a workflow
 
 ```text
@@ -66,10 +74,11 @@ src/utilities/<utility_name>/
 
 ## Authoritative schema source
 
-Use `https://eu1.polyapi.io/swagger-json` as the source of truth for the JSON
+Use the selected instance's `/swagger-json` or its saved contract for the JSON
 body shape of platform-managed artefacts. The checked-in repo conventions tell
 you where files live and how names align; the swagger tells you which fields
-the platform accepts.
+the platform accepts. When a repo has an adapter, also check its local validation
+and reference transformations before treating local JSON as an API payload.
 
 | Folder | Swagger resource | Create DTO |
 | --- | --- | --- |
@@ -93,7 +102,7 @@ Notes:
   "context": "<context.name>",
   "description": "<short description of what this endpoint does>",
   "subpath": "<url-path>?<param1>={<param1>}&<param2>={<param2>}",
-  "method": "GET|POST|PUT|PATCH|DELETE",
+  "method": "POST",
   "eventPayloadType": "null",
   "responsePayload": {},
   "responseStatus": 200,
@@ -111,26 +120,31 @@ Notes:
 
 | Field | Rule |
 | --- | --- |
-| `name` | Must end with `_hook`. If the repo checks in trigger artefacts, keep the base name aligned with the paired trigger. |
+| `name` | Follow the repo's deployed naming convention; `_hook` is an example suffix. Keep paired webhook/trigger base names aligned where practical. |
 | `context` | Must follow the target repo's naming conventions. |
-| `subpath` | Must match the exact Mule public URL, including path params as `{param}` and query params as `?key={key}`. |
+| `subpath` | Must match the intended public URL, including path params as `{param}` and query params as `?key={key}`. |
 | `method` | Upper case. |
 | `eventPayloadTypeSchema` | Full JSON Schema of the request body when the endpoint accepts a body. Omit it or use the repo's established empty-body pattern when there is no body. |
-| `responsePayload` | Full JSON Schema of the success response body. |
-| `responseStatus` | Preserve the Mule status code. |
+| `responsePayload` | Default response body when a trigger supplies no response data. |
+| `responseStatus` | Preserve the endpoint's intended status code. |
 | `slug` | Follow the checked-in repo convention. Preserve placeholder tokens when the repo uses them. |
-| `xmlParserOptions.enabled` | Set to `true` only when the caller sends or receives XML. |
+| `xmlParserOptions.enabled` | Set to `true` only when the caller sends XML that must be parsed. |
 
 ### XML parsing options
 
 ```json
-"xmlParserOptions": {
-  "enabled": true,
-  "explicitArray": true,
-  "trim": true,
-  "normalizeTags": true
+{
+  "xmlParserOptions": {
+    "enabled": true,
+    "explicitArray": true,
+    "trim": true,
+    "normalizeTags": true
+  }
 }
 ```
+
+Choose these flags from the XML contract; this is not an all-true default.
+Array shape, whitespace trimming, and lowercasing tags can change the payload.
 
 ## Variable artefact
 
@@ -150,8 +164,8 @@ Notes:
 {
   "name": "<flow_name>",
   "schedule": {
-    "type": "periodical|interval",
-    "value": "<cron expression or integer minutes>",
+    "type": "interval",
+    "value": 60,
     "acceptableDelayTime": 30
   },
   "functions": [
@@ -167,6 +181,10 @@ Notes:
 }
 ```
 
+Where the repo's resolver supports it, use `functionName` and `functionContext`
+in place of a job function's `id`; the resolver supplies the selected target ID.
+Keep `enabled` at the intended state.
+
 ## Tabi artefact
 
 ```json
@@ -174,10 +192,12 @@ Notes:
   "name": "<name>_tabi",
   "context": "<context.name>",
   "description": "<what this table contains>",
-  "columns": [],
-  "rows": []
+  "columns": []
 }
 ```
+
+Use the selected table contract for columns; row data uses separate table API/SDK
+operations rather than the table-create payload.
 
 ## Canopy artefact
 
@@ -195,9 +215,9 @@ in Canopy UI definitions alongside the rest of the workflow artefacts.
 Every workflow folder must have an `OVERVIEW.md` describing:
 
 - integration purpose
-- original Mule project it migrates
+- source integration it migrates, when applicable
 - PolyAPI components created
 - required variables and secrets
 - downstream systems
-- behavioural parity notes
+- behavioural parity notes, when migrating
 - known gaps or deviations

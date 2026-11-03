@@ -18,7 +18,7 @@ For exception ordering and logging behaviour, also follow `coding-standards`.
 
 ## Python version
 
-Match the target repo's toolchain. The current GHA target repo uses Python 3.12. Verify with `python --version`.
+Match the target repo's pinned Python and SDK versions. Verify with `python --version`.
 
 ---
 
@@ -34,13 +34,17 @@ from typing_extensions import TypedDict, NotRequired, Literal, Any
 from typing import TypedDict
 ```
 
-Use Python 3.10+ syntax for all other annotations:
+Use annotations supported by the pinned SDK at deployed function boundaries.
+For example, `0.3.20.dev4` parses `list[str]`, `dict[str, str]`, `str | None`,
+and a `None` return as `Any`; it recognizes `List[str]`, `Dict[str, str]`, and
+named local types. Verify emitted argument/return schemas, including optional
+and no-return types. Internal annotations follow a separate path.
 
 ```python
-list[str]           # not List[str]
-dict[str, Any]      # not Dict[str, Any]
-str | None          # not Optional[str]
-str | int           # not Union[str, int]
+from typing import List
+
+def echo_tags(tags: List[str]) -> List[str]:
+    return tags
 ```
 
 ---
@@ -53,11 +57,15 @@ The SDK generator creates `__init__.py` files that import all functions. Cross-r
 
 Redeclare the `TypedDict` locally in each file that needs it. Do not import sibling SDK types from the same context.
 
+A single-source-file deployer does not bundle neighboring `_types.py` or helper
+modules. Keep required runtime types/helpers inline unless bundling is supported.
+
 ---
 
 ## Webhook-linked SFX contract — critical rule
 
-Any SFX linked to a webhook receives exactly three positional arguments:
+A common webhook-trigger mapping passes these three arguments. Verify the actual
+trigger and function signature; ordinary and security functions can differ:
 
 | Argument | Type | Contents |
 | --- | --- | --- |
@@ -71,21 +79,23 @@ When a shared HTTP router sits in front of the SFX, `headers` often includes key
 
 ## SFX function shape
 
-Server functions must always return a `dict`. Follow `coding-standards` for exception ordering and logging, and follow any project-specific standards skill for the boundary payload and status-setting pattern.
+Match the actual return contract: a security function can return `bool`, while an
+HTTP handler may return a `dict`. Follow `coding-standards` for exception ordering and logging, and follow any project-specific standards skill for the boundary payload and status-setting pattern.
 
 ---
 
 ## Core rules
 
-- Use the active repo's pinned native SDK and environment manager; reuse its
+- Use the repo's pinned SDK, environment, and existing setup/deploy commands;
+  do not introduce Flow as a prerequisite for a native-CLI repo. Reuse its
   configured connection instead of reinstalling or upgrading the SDK.
-- Regenerate after catalogue changes unless the repo's Flow command already
-  does so. Keep generation and deployment on the same target.
+- Refresh the SDK after catalog changes unless the deploy command already does so;
+  keep generation and deployment on the same target.
 - Import `TypedDict` from `typing_extensions`, never from `typing`.
-- Use Python 3.10+ type syntax for other annotations.
+- Verify deployed argument and return schemas with the pinned SDK parser.
 - The `--context` must match the active repo's naming conventions.
-- Webhook-linked SFX handlers take exactly `__event`, `headers`, and `params`.
-- Server functions must return a `dict` and handle top-level failures cleanly.
+- Match webhook handler arguments to the actual trigger mapping.
+- Match the function's return contract and handle top-level failures cleanly.
 - Use `coding-standards` for exception handling structure, plus any project-specific standards skill for repo-specific boundary behaviour.
 
 ## Reference

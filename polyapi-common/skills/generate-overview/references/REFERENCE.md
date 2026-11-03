@@ -1,5 +1,8 @@
 # generate-overview Reference
 
+Resolve the workflow root from the active repo first. In the rules and examples
+below, substitute that root for `src/` (for example, `workflows/src/`).
+
 This reference captures the required structure and validation rules for
 `OVERVIEW.md` generation in this repo. It is the canonical source for this
 skill.
@@ -23,6 +26,9 @@ Examples:
 
 ## Flow Discovery Rules
 
+Verify these common filename patterns against the repo's discovery rules and
+function metadata; include supported entrypoints with other filenames.
+
 - Search the analysed folder for server entry points under `server/`.
 - Server entry points match:
   - `*_sfx.py`
@@ -33,7 +39,8 @@ Examples:
 - Client functions match:
   - `*_cfx.py`
   - `*CFX.ts`
-- Flow names should match the file name without the entrypoint suffix.
+- Use the actual entrypoint name; the filename without its suffix is suitable
+  when it matches that entrypoint.
 
 ## Expansion Rules
 
@@ -102,7 +109,7 @@ Each flow section must include:
 
 Create a complete Mermaid flowchart for each flow showing:
 
-- trigger or caller as `S0`
+- all triggers or callers, using `S0` or distinct IDs when there are several
 - all server logic if present
 - all primary client logic
 - expanded helper client logic
@@ -122,8 +129,8 @@ Mermaid constraints:
 - node IDs use letters, digits, and underscores only
 - avoid reserved words such as `end`, `subgraph`, `class`, `click`, `style`,
   and `link`
-- decision edges use only `yes` and `no`
-- every decision node must have both a `yes` path and a `no` path
+- Boolean decisions have both `yes` and `no` paths
+- multi-way decisions label every applicable outcome
 - keep labels short and move detail into step descriptions
 
 ## Step Detail Requirements
@@ -155,7 +162,8 @@ Classification values:
 
 Rules:
 
-- every step must include at least one file link
+- every locally implemented step must include at least one file link; label
+  external or inferred callers without inventing implementation files
 - links must be clickable relative Markdown links that resolve from the
   `OVERVIEW.md` location
 - if logic spans multiple files, link all relevant files
@@ -172,14 +180,14 @@ Rules:
 
 Before finishing, ensure:
 
-- every flow has exactly one trigger or caller entry node
-- every decision node has both `yes` and `no` paths
+- every flow includes all actual or explicitly inferred trigger/caller entry nodes
+- every Boolean decision has `yes` and `no` paths; multi-way outcomes are labeled
 - every client function referenced by the flow is expanded
 - business-relevant utility and global logic is expanded
 - Vari and TABI usage appear in both text and diagram when used
 - external systems and databases are shown where called
 - all triggers or callers and all end states appear in both text and diagram
-- every step includes valid clickable file links relative to the
+- every locally implemented step includes valid clickable file links relative to the
   `OVERVIEW.md` location
 - `OVERVIEW.md` is in the correct folder
 - assumptions are stated explicitly

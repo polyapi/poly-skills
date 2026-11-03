@@ -11,6 +11,9 @@ compatibility: Aligned to this repo's current PolyAPI workflow layout and the
 
 # Skill: Generate Overview
 
+Resolve the workflow root from the active repo first. In the rules and examples
+below, substitute that root for `src/` (for example, `workflows/src/`).
+
 Use this skill to create or refresh authoritative `OVERVIEW.md` files for
 runtime-owned folders in this repository.
 
@@ -61,6 +64,9 @@ The analysed folder will usually be one of:
 - `src/scripts/<script_name>`
 
 ## Flow Discovery
+
+Verify these common filename patterns against the repo's discovery rules and
+function metadata; include supported entrypoints with other filenames.
 
 - Treat files under `server/` matching `*_sfx.py` or `*SFX.ts` as server entry
   points.

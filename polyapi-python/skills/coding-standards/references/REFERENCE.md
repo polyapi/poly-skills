@@ -1,5 +1,8 @@
 # coding-standards Reference
 
+Resolve the workflow root from the active repo first. In the rules and examples
+below, substitute that root for `src/` (for example, `workflows/src/`).
+
 ## Overview maintenance
 
 - Every workflow folder under `src/<workflow_name>/` should have an

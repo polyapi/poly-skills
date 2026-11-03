@@ -1,5 +1,8 @@
 # AGENTS Guide for PolyAPI Python
 
+Resolve the workflow root from the active repo first. In the rules and examples
+below, substitute that root for `src/` (for example, `workflows/src/`).
+
 Shared repo-wide rules for agents working inside a PolyAPI Python repository.
 Keep this file focused on source-of-truth order, workflow model, and skill
 entry points. Detailed implementation guidance belongs in the local skills.
@@ -34,13 +37,14 @@ context only unless they match maintained checked-in patterns.
   `artefacts/`, `deployment/`, and `scripts/` together under the workflow.
 - Put genuinely shared reusable code under `src/utilities/`.
 - Keep workflow-local helper scripts local to the workflow or utility they
-  support.
+  support. Create only needed folders; a single-file deployer requires runtime
+  types/helpers inline unless it explicitly bundles neighboring modules.
 
 ## Artefact Contract
 
 - Keep Python code, JSON artefacts, and tests aligned in the same change.
-- Use `https://eu1.polyapi.io/swagger-json` as the source of truth for the JSON
-  field shape of platform-managed artefacts.
+- Use the selected instance's `/swagger-json` or its saved contract for JSON
+  field shapes; also check the repo's local adapter/validators when present.
 - Use checked-in repo patterns for file placement, naming, and workflow
   structure.
 - One public endpoint should map to one explicit webhook artefact.
@@ -53,8 +57,8 @@ context only unless they match maintained checked-in patterns.
 - Match the Python version and toolchain already pinned by the target repo.
 - Use the repo's existing environment and package-management pattern
   (`venv`, `uv`, `pip`, `poetry`, or equivalent). Do not invent a new one.
-- Run the repo's checked-in generate, deploy, and test path after code or
-  artefact changes.
+- Run the repo's checked-in local tests after code or artefact changes.
+  Use its generate/deploy path only for the authorized target and scope.
 - Do not upgrade `polyapi-python` or related dependencies casually.
 
 ## Task Entry Points
@@ -82,7 +86,7 @@ context only unless they match maintained checked-in patterns.
 
 1. Inspect a comparable maintained workflow before inventing new patterns.
 2. Edit code, artefacts, and tests together.
-3. Run the repo's checked-in generate, deploy, and test path.
+3. Run local tests; use the repo's generate/deploy path when authorized.
 4. Update same-folder `OVERVIEW.md` when behaviour changes.
 5. Keep changes small, reviewable, and easy to verify.
 
