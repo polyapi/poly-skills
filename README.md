@@ -1,112 +1,103 @@
 # poly-skills
 
-Curated skills and agents for PolyAPI project implementations. It covers a wide range of use cases, including coding PolyAPI projects in TypeScript or Python and migrating from MuleSoft to PolyAPI.
+![Give your agents PolyAPI know-how. Skills and playbooks for TypeScript, Python, MuleSoft, and Boomi.](./.images/poly-skills-banner.svg)
 
-## Browse
+Practical skills and agent playbooks for building with PolyAPI. Give your coding
+agent the context to design workflows, use the SDK, train API Functions, build
+Canopy apps, and migrate integrations from MuleSoft or Boomi.
 
-- [boomi-to-polyapi](./boomi-to-polyapi/README.md): Dell Boomi analysis and
-  migration pack
-- [mulesoft-to-polyapi](./mulesoft-to-polyapi/README.md): MuleSoft analysis and
-  migration pack
-- [polyapi-common](./polyapi-common/README.md): shared PolyAPI design and repo
-  guidance
-- [polyapi-python](./polyapi-python/README.md): Python-specific PolyAPI skills
-- [polyapi-typescript](./polyapi-typescript/README.md): TypeScript-specific
-  PolyAPI skills
-- [common](./general/README.md): broad reusable non-PolyAPI skills
+**[Explore the catalog](./CATALOG.md)** · [Quick start](#quick-start) ·
+[Contribute](#contributing)
 
-## Index
+## Find your starting point
 
-See [CATALOG.md](./CATALOG.md) for the full skill and pack catalog.
+Pick a language pack, add shared PolyAPI skills, and bring in migration playbooks
+when you need them. Each pack links to its skills and supporting references.
 
-## Using In Projects
+| Pack | What you can do |
+| --- | --- |
+| [TypeScript](./polyapi-typescript/README.md) | Build workflows with SDK, coding, artefact, API training, and runtime-testing guidance. |
+| [Python](./polyapi-python/README.md) | Build workflows with Python SDK, coding, artefact, and API training guidance. |
+| [PolyAPI foundations](./polyapi-common/README.md) | Choose constructs, interpret designs, work with AI Functions and Tabi, build Canopy apps, and document workflows. |
+| [MuleSoft → PolyAPI](./mulesoft-to-polyapi/README.md) | Extract and redact source, analyse Mule XML and RAML, generate schemas, and guide implementation. |
+| [Boomi → PolyAPI](./boomi-to-polyapi/README.md) | Download and analyse Boomi components, derive schemas, and guide TypeScript conversion. |
+| [General engineering](./general/README.md) | Apply reusable clean-code and Markdown authoring guidance. |
 
-To use a skill in another repo, copy the full relevant skill folder into that
-repo's `.agents/skills/` directory.
+## Go straight to the task
 
-- Copy the whole folder, not just `SKILL.md`.
-- Keep supporting files such as `references/`, `scripts/`, and templates with
-  the skill.
-- Preserve the folder name so the skill name and folder name still match.
-- Skill folders belong under `.agents/skills/`.
-- Repo-level `AGENTS.md` files belong at the root of the target repo, not
-  under `.agents/`.
-- If you are using a language pack, use that pack's `AGENTS.md` as the starting
-  point for the target repo's root `AGENTS.md`.
-- In the target repo's root `AGENTS.md` or agent instructions, tell agents to
-  load the copied skill when relevant.
-- If you copy an agent playbook or pack-level workflow, also copy the skills it
-  depends on or update the referenced paths.
+- **Train an API from OpenAPI or Swagger** — use the
+  [TypeScript](./polyapi-typescript/skills/api-function-training/SKILL.md) or
+  [Python](./polyapi-python/skills/api-function-training/SKILL.md) training skill.
+- **Build a customer-facing app** — start with
+  [Canopy UI](./polyapi-common/skills/canopy-ui/SKILL.md) for Application JSON,
+  forms, collections, actions, and PolyUI deployment.
+- **Choose where state belongs** — use
+  [PolyAPI constructs](./polyapi-common/skills/polyapi-constructs/SKILL.md) for
+  Vari, secrets, and Tabi decisions, then
+  [Tabi](./polyapi-common/skills/tabi/SKILL.md) for table operations and retention.
+- **Design an AI Function** — use
+  [AI Functions](./polyapi-common/skills/ai-functions/SKILL.md) for typed
+  contracts, tool references, and the path toward deterministic code.
+- **Clean up Flow resources or inspect server-function logs** — use the
+  [TypeScript](./polyapi-typescript/skills/polyapi-sdk/references/FLOW.md) or
+  [Python](./polyapi-python/skills/polyapi-sdk/references/FLOW.md) Flow reference.
 
-### Agent File Conventions
+## Quick start
 
-- Pack-level `AGENTS.md` files are repo-entrypoint templates.
-- If you copy `polyapi-python/AGENTS.md`, `polyapi-typescript/AGENTS.md`, or a
-  similar pack-level guide, it should become the target repo's root
-  `AGENTS.md`.
-- `specialised_agents/*.md` files are task-specific playbooks, not the default
-  repo entrypoint.
-- If you copy a specialised playbook, place it in a normal repo folder such as
-  `<target-repo>/agents/` or `<target-repo>/specialised_agents/`, then have the
-  root `AGENTS.md` tell agents when to use it.
-- Never put repo-entrypoint `AGENTS.md` files or specialised playbooks under
-  `.agents/skills/`. That area is only for skills.
+A skill is a folder containing a `SKILL.md` entrypoint and, where needed,
+references, scripts, or templates. Copy the skills you need into your project's
+`.agents/skills/` directory, then tell your agent when to use them.
 
-Example:
+Clone this repo alongside your project. From your **project root**, this example
+installs shared construct guidance and the TypeScript SDK skill:
 
-```text
-poly-skills/polyapi-python/AGENTS.md
-  -> <target-repo>/AGENTS.md
-
-poly-skills/polyapi-python/skills/coding-conventions/
-  -> <target-repo>/.agents/skills/coding-conventions/
-
-poly-skills/mulesoft-to-polyapi/specialised_agents/POLYAPI_CODEAGENT.md
-  -> <target-repo>/agents/POLYAPI_CODEAGENT.md
+```bash
+git clone https://github.com/polyapi/poly-skills.git ../poly-skills
+mkdir -p .agents/skills
+cp -R ../poly-skills/polyapi-common/skills/polyapi-constructs .agents/skills/
+cp -R ../poly-skills/polyapi-typescript/skills/polyapi-sdk .agents/skills/
 ```
 
-## TODO
+For Python, use `polyapi-python` in place of `polyapi-typescript`.
+Copy each **whole skill folder**, including supporting files, and keep its name.
+Add any companion skills required by the selected skill or playbook.
 
-Missing skills. Volunteers welcome.
+Add relevant entrypoints to your root `AGENTS.md`, for example:
 
-These are the highest-signal gaps based on real production PolyAPI workflow
-repos, especially for bringing `polyapi-python` closer to the day-to-day
-patterns used in production.
+```markdown
+- Before choosing PolyAPI constructs, load
+  `.agents/skills/polyapi-constructs/SKILL.md`.
+- Before writing or deploying PolyAPI code, load
+  `.agents/skills/polyapi-sdk/SKILL.md`.
+```
 
-- `canopy-ui-creation`: guidance for creating and maintaining Canopy UI flows
-  and related artefacts
+For a new repo, use the
+[TypeScript](./polyapi-typescript/AGENTS.md) or
+[Python](./polyapi-python/AGENTS.md) pack's `AGENTS.md` as a starting point.
+For an existing repo, merge the relevant guidance into its current instructions.
 
-Baseline construct definitions live under `polyapi-common/skills/polyapi-constructs/`.
-AI Function selection and Flow artefact guidance lives under
-`polyapi-common/skills/ai-functions/`.
-Tabi implementation guidance now lives under `polyapi-common/skills/tabi/`.
+### Keep the files in the right place
 
-- `vari-and-tabi-patterns`: when to model data in vari vs tabi, how to handle
-  secrets vs config vs cache, and how jobs fit around retention and cleanup
+| Source | Destination in your project |
+| --- | --- |
+| `<pack>/skills/<skill>/` | `.agents/skills/<skill>/`, including all supporting files |
+| `<pack>/AGENTS.md` | Root `AGENTS.md`, adapted to your project |
+| `<pack>/specialised_agents/*.md` | `agents/` or `specialised_agents/`, referenced by root `AGENTS.md` |
 
-If you want to pick one up, create a branch named after the skill or change and
-open a PR to another member of the team for review.
+Repo entrypoints and specialised playbooks belong outside `.agents/skills/`.
+When copying a playbook, copy its required skills too and adapt referenced paths.
 
 ## Contributing
 
-Use a short-lived branch for every repo change.
+Found a missing pattern or an unclear instruction? Contributions are welcome.
 
-1. Create a branch named after the skill or the specific change being made.
-   Examples:
-   - `writing-skills-update`
-   - `design-analysis-clarifications`
-   - `generate-schemas-doc-fix`
-2. Make the change in the relevant pack or skill folder.
-3. Open a pull request for review by another member of the team.
-4. Merge only after that review is complete.
+1. Create a short-lived branch named after the skill or change.
+2. Follow the [skill-authoring guide](./.agents/skills/writing-skills/SKILL.md)
+   when creating, editing, moving, or reviewing skills.
+3. Keep skills self-contained and update the [catalog](./CATALOG.md) and affected
+   pack READMEs when skills are added, removed, renamed, or moved.
+4. Open a focused pull request for another team member to review. Merge after
+   that review is complete.
 
-When possible, keep each branch focused on one skill or one tightly related
-change so the review stays easy to follow.
-
-## Maintainer Guidance
-
-When creating, editing, moving, or reviewing skills in this repo, agents should
-follow [.agents/skills/writing-skills/SKILL.md](./.agents/skills/writing-skills/SKILL.md).
-
-That `.agents/skills` area is repo-maintenance guidance, not part of the public
-skill catalog intended for cherry-picking into other projects.
+The internal `.agents/skills/` directory contains maintainer guidance; browse the
+packs above for skills intended to be copied into your projects.

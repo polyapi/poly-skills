@@ -5,7 +5,10 @@
 Use the repo's pinned environment and package manager first. The native CLI
 examples below apply when that is the repo's chosen workflow; use its existing
 Flow or other deploy commands where configured. Setup, generation, and deployment
-require an explicitly selected, authorized target.
+require an explicitly selected, authorized target. Reuse the target repo's
+configured connection and SDK instead of reinstalling or upgrading them. Use
+the repo's `uv`, `venv`, or other documented runner; Flow may already perform
+SDK regeneration after deployment.
 
 ```bash
 python -m polyapi setup
@@ -13,7 +16,8 @@ python -m polyapi generate
 ```
 
 Refresh the SDK after catalog changes unless the deploy command already does so.
-Native `function add` in `0.3.20.dev4` regenerates unless `--skip-generate` is used.
+Native `function add` in `0.3.20.dev4` regenerates unless `--skip-generate` is used;
+generate and deploy against the same target.
 
 ## Python version
 

@@ -1,6 +1,6 @@
 ---
 name: polyapi-sdk
-description: Reference guide for correct PolyAPI Python setup, typing rules, deployment commands, and SDK quirks. Use before writing or deploying PolyAPI Python code in PolyAPI projects.
+description: Use when configuring the native PolyAPI Python SDK, checking generated types or function deployment, or using Flow resource cleanup and server-function logs.
 ---
 
 # Skill: PolyAPI SDK
@@ -87,8 +87,10 @@ HTTP handler may return a `dict`. Follow `coding-standards` for exception orderi
 ## Core rules
 
 - Use the repo's pinned SDK, environment, and existing setup/deploy commands;
-  do not introduce Flow as a prerequisite for a native-CLI repo.
-- Refresh the SDK after catalog changes unless the deploy command already does so.
+  do not introduce Flow as a prerequisite for a native-CLI repo. Reuse its
+  configured connection instead of reinstalling or upgrading the SDK.
+- Refresh the SDK after catalog changes unless the deploy command already does so;
+  keep generation and deployment on the same target.
 - Import `TypedDict` from `typing_extensions`, never from `typing`.
 - Verify deployed argument and return schemas with the pinned SDK parser.
 - The `--context` must match the active repo's naming conventions.
@@ -99,3 +101,16 @@ HTTP handler may return a `dict`. Follow `coding-standards` for exception orderi
 ## Reference
 
 See `./references/REFERENCE.md` for setup commands, deployment commands, type mapping, circular import examples, webhook-linked SFX conventions, and virtual environment notes.
+
+## Flow Operations
+
+For scoped resource deletion or server-function log retrieval, read
+[`references/FLOW.md`](./references/FLOW.md). It covers the current Python
+Flow interface, exact/descendant contexts, preview/apply boundaries, deletion
+verification and log pagination. Discover the target repo's available commands
+before using these template examples.
+
+For OpenAPI/Swagger API Function training, use `api-function-training` when
+installed. Its dedicated workflow covers operation selection, saved models,
+plain-text descriptions and native SDK verification. A copied SDK skill does
+not require installing Flow into a native-CLI project.

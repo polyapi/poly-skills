@@ -68,7 +68,10 @@ context only unless they match maintained checked-in patterns.
 - Use `./.agents/skills/artefacts-usage/SKILL.md` before creating or reviewing
   workflow layout or JSON artefacts.
 - Use `./.agents/skills/polyapi-sdk/SKILL.md` before writing or deploying
-  PolyAPI Python code.
+  PolyAPI Python code, using Flow resource cleanup, or retrieving
+  server-function logs.
+- Use `./.agents/skills/api-function-training/SKILL.md` for OpenAPI/Swagger
+  API Function training, operation selection, saved models and SDK verification.
 - Use `./.agents/skills/coding-standards/SKILL.md` before writing logging or
   error handling, and when behaviour-changing work requires `OVERVIEW.md`
   updates.
