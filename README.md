@@ -91,13 +91,21 @@ When copying a playbook, copy its required skills too and adapt referenced paths
 
 Found a missing pattern or an unclear instruction? Contributions are welcome.
 
-1. Create a short-lived branch named after the skill or change.
-2. Follow the [skill-authoring guide](./.agents/skills/writing-skills/SKILL.md)
-   when creating, editing, moving, or reviewing skills.
-3. Keep skills self-contained and update the [catalog](./CATALOG.md) and affected
-   pack READMEs when skills are added, removed, renamed, or moved.
-4. Open a focused pull request for another team member to review. Merge after
-   that review is complete.
+1. For larger changes, [open an issue](https://github.com/polyapi/poly-skills/issues)
+   first so we can agree on the approach.
+2. Fork and clone this repository, then create a branch for your change.
+3. Follow the [skill-authoring guide](./.agents/skills/writing-skills/SKILL.md).
+   Keep skills self-contained and update the [catalog](./CATALOG.md) and affected
+   pack READMEs when skills are added, removed, renamed, or moved. Never include
+   credentials or customer data.
+4. Verify links and examples, and try changed instructions in a representative
+   project. Explain what you tested and any limitations.
+5. Open a focused pull request against `main`, explaining the change and how you
+   checked it. A maintainer will review it.
 
 The internal `.agents/skills/` directory contains maintainer guidance; browse the
 packs above for skills intended to be copied into your projects.
+
+## License
+
+Licensed under the [MIT License](LICENSE).
