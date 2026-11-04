@@ -17,6 +17,7 @@
 | `mulesoft-to-polyapi` | Skill | `extract-redact-mule-jars` | Unpack Mule jars and redact configuration |
 | `mulesoft-to-polyapi` | Skill | `generate-schemas` | Generate JSON Schemas and optional Python helper classes from RAML |
 | `polyapi-common` | Skill | `ai-functions` | Design approved AI Function boundaries when contracts are known but scenarios are not, then evolve them from logs toward deterministic code |
+| `polyapi-common` | Skill | `mcp-servers` | Expose approved PolyAPI functions as MCP tools with fixed bindings, guarded writes, and Flow artefacts |
 | `polyapi-common` | Skill | `design-analysis` | Interpret PolyAPI design diagrams |
 | `polyapi-common` | Skill | `generate-overview` | Refresh same-folder `OVERVIEW.md` files |
 | `polyapi-common` | Skill | `polyapi-implementation-principles` | Shared PolyAPI implementation principles for architecture-sensitive repo changes |
