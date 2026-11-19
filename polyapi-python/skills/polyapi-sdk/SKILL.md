@@ -19,6 +19,8 @@ For exception ordering and logging behaviour, also follow `coding-standards`.
 ## Python version
 
 Match the target repo's pinned Python and SDK versions. Verify with `python --version`.
+The PolyAPI Python project template pins `polyapi-python==0.3.21` for PolyAPI
+Release 35; do not upgrade a repo's pin without being asked.
 
 ---
 
@@ -64,14 +66,19 @@ modules. Keep required runtime types/helpers inline unless bundling is supported
 
 ## Webhook-linked SFX contract — critical rule
 
-A common webhook-trigger mapping passes these three arguments. Verify the actual
-trigger and function signature; ordinary and security functions can differ:
+A webhook passes these three arguments to its server function, whether the
+function is bound directly to the webhook (the default) or invoked through a
+trigger. Verify the actual function signature; ordinary and security functions
+can differ:
 
 | Argument | Type | Contents |
 | --- | --- | --- |
 | `__event` | `dict` | Request body or event payload |
-| `headers` | `dict` | HTTP or trigger headers |
+| `headers` | `dict` | HTTP request headers |
 | `params` | `dict` | Query and path parameters |
+
+With a direct binding the call is synchronous and the function's return value
+is the webhook's response.
 
 When a shared HTTP router sits in front of the SFX, `headers` often includes keys such as `X-Http-Method`, `X-Original-Uri`, `Authorization`, and `X-Force-Log`.
 
@@ -94,7 +101,7 @@ HTTP handler may return a `dict`. Follow `coding-standards` for exception orderi
 - Import `TypedDict` from `typing_extensions`, never from `typing`.
 - Verify deployed argument and return schemas with the pinned SDK parser.
 - The `--context` must match the active repo's naming conventions.
-- Match webhook handler arguments to the actual trigger mapping.
+- Match webhook handler arguments to the webhook's direct binding or trigger mapping.
 - Match the function's return contract and handle top-level failures cleanly.
 - Use `coding-standards` for exception handling structure, plus any project-specific standards skill for repo-specific boundary behaviour.
 
@@ -104,7 +111,9 @@ See `./references/REFERENCE.md` for setup commands, deployment commands, type ma
 
 ## Flow Operations
 
-For scoped resource deletion or server-function log retrieval, read
+For scoped resource deletion, server-function log retrieval, running a job
+once, or Release 35 push behaviour (webhook bindings, job intervals,
+subscription updates, server-function settings), read
 [`references/FLOW.md`](./references/FLOW.md). It covers the current Python
 Flow interface, exact/descendant contexts, preview/apply boundaries, deletion
 verification and log pagination. Discover the target repo's available commands

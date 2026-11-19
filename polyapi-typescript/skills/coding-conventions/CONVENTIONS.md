@@ -27,7 +27,7 @@ workflows/src/<integrationName>/
   artifacts/
     schemas/
     webhooks/
-    triggers/
+    triggers/      # only when a webhook needs a trigger
     vari/
     jobs/
     tabi/
@@ -46,6 +46,9 @@ workflows/src/<integrationName>/
   basename
 - Keep webhook, trigger, variable, job, and table filenames internally
   consistent within the workflow
+- Name a webhook after the server function it binds (or after its endpoint when
+  it binds a shared router function); add a matching trigger name only when the
+  webhook uses a trigger instead of a direct binding
 
 ## Formatting
 
@@ -310,11 +313,11 @@ const logLevel =
 ## Artifacts and Contracts
 
 - When TypeScript changes a contract, update the matching JSON artifacts, schema
-  refs, triggers, or metadata in the same change
+  refs, webhook bindings, triggers, or metadata in the same change
 - Make schema changes additive by default
 - Version breaking changes rather than silently mutating existing contracts
-- Keep naming aligned across `.ts`, `.json`, webhook, and trigger files when the
-  repo uses paired artifacts
+- Keep naming aligned across `.ts`, `.json`, and webhook files, plus trigger
+  files when the repo uses a trigger
 - Use the live folder spellings: `artifacts/`, `vari/`, and `tabi/`
 - Use `artifacts/`, not `artefacts/`
 
@@ -325,8 +328,11 @@ workflows/src/payments/server/processPayment.ts
 workflows/src/payments/server/processPayment.json
 workflows/src/payments/artifacts/schemas/paymentInput.json
 workflows/src/payments/artifacts/webhooks/paymentEvents.json
-workflows/src/payments/artifacts/triggers/paymentEventsTrigger.json
 ```
+
+`paymentEvents.json` binds `processPayment` with `serverFunction`. Add
+`artifacts/triggers/paymentEventsTrigger.json` only if the webhook needs a
+trigger instead, and then remove the binding.
 
 ## Tests
 

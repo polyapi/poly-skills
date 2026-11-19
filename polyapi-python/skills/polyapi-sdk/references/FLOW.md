@@ -93,3 +93,32 @@ customer payloads: retrieve bounded, relevant pages and redact sensitive
 content before reporting or saving it. Report function, target, page/filter,
 timestamps and relevant events. A handler's successful return alone does not
 prove an upstream side effect succeeded.
+
+## Push Behaviour to Expect
+
+These apply to the current Python Flow template with PolyAPI Release 35.
+Confirm with local help and `cli/README.md` before relying on them.
+
+- **Webhook bindings:** `serverFunction: { functionName, functionContext }` in
+  a webhook artefact resolves to `serverFunctionId`. Deploy the function first.
+  `null` removes the binding; omitting the field leaves it unmanaged.
+- **Jobs:** an interval `value` is a whole number of minutes or a duration
+  string (`"10s"`, `"30m"`, `"2h"`); the minimum is 10 seconds. Run a deployed
+  job once with `flow jobs run <name> --dry-run`, then without `--dry-run`. It
+  uses the same target and production safeguards as other operations, and
+  queues the run without waiting for it to finish.
+- **GraphQL subscriptions:** non-structural settings (`description`,
+  `visibility`, `enabled`, `functionParams`, `ohipMaintainOffset`,
+  `eventInactivityThresholdMs`, and similar) are updated in place, without a
+  delete and recreate. Changes to `type`, `transportProtocol`, `websocketUrl`,
+  `query`, or the destination function are structural: they are blocked unless
+  `--force` is passed and a typed `YES` confirms the delete and recreate.
+  Recreation can reset stream offsets, so get explicit authorization first.
+- **Server-function settings:** `polyConfig` accepts `server_side_async`
+  ("Run in Background": calls return `202` with an execution ID and can run
+  longer than 30 minutes) and `container_concurrency` (`None` removes the
+  override). When only these change, Flow patches the function without
+  uploading its code again.
+- **Agent skills:** `flow skills add python` installs these skills into
+  `.agents/skills/`, and `flow skills update` refreshes them. Use `--dry-run`
+  to preview an update.

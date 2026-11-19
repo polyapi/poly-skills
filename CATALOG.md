@@ -20,17 +20,17 @@
 | `polyapi-common` | Skill | `design-analysis` | Interpret PolyAPI design diagrams |
 | `polyapi-common` | Skill | `generate-overview` | Refresh same-folder `OVERVIEW.md` files |
 | `polyapi-common` | Skill | `polyapi-implementation-principles` | Shared PolyAPI implementation principles for architecture-sensitive repo changes |
-| `polyapi-common` | Skill | `polyapi-constructs` | Language-agnostic definitions and decision rules for PolyAPI constructs (schemas, webhooks, triggers, functions, jobs, vari, tabi, canopy) |
+| `polyapi-common` | Skill | `polyapi-constructs` | Language-agnostic definitions and decision rules for PolyAPI constructs (schemas, webhooks and direct function bindings, triggers, functions, jobs, vari, tabi, canopy) |
 | `polyapi-common` | Skill | `canopy-ui` | Customer-facing Canopy app authoring through Application JSON: collections, forms, actions, argument mapping, and deployment via PolyUI |
 | `polyapi-common` | Skill | `tabi` | Design, create, query, review, and maintain PolyAPI Tabi tables, SDK row operations, and lifecycle state |
 | `polyapi-python` | Guide | `AGENTS.md` | Generalized root agent guide for PolyAPI Python repos |
-| `polyapi-python` | Skill | `polyapi-sdk` | Python SDK, typing quirks, Flow resource cleanup and server-function logs |
+| `polyapi-python` | Skill | `polyapi-sdk` | Python SDK, typing quirks, Flow resource cleanup, server-function logs and push behaviour |
 | `polyapi-python` | Skill | `api-function-training` | OpenAPI/Swagger API Function training, operation selection, saved models and native SDK verification |
 | `polyapi-python` | Skill | `coding-conventions` | Python naming and file-layout conventions |
 | `polyapi-python` | Skill | `artefacts-usage` | Python artefact structure and placement |
 | `polyapi-python` | Skill | `coding-standards` | Python logging and error-handling rules |
 | `polyapi-typescript` | Guide | `AGENTS.md` | Generalized root agent guide for PolyAPI TypeScript repos |
-| `polyapi-typescript` | Skill | `polyapi-sdk` | TypeScript SDK, runtime/sync rules, Flow resource cleanup and server-function logs |
+| `polyapi-typescript` | Skill | `polyapi-sdk` | TypeScript SDK, runtime/sync rules, Flow resource cleanup, server-function logs and push behaviour |
 | `polyapi-typescript` | Skill | `api-function-training` | OpenAPI/Swagger API Function training, operation selection, saved models and TypeScript SDK verification |
 | `polyapi-typescript` | Skill | `polyapi-runtime-testing` | TypeScript deployed-function integration testing and log verification |
 | `polyapi-typescript` | Skill | `coding-conventions` | TypeScript PolyAPI conventions |

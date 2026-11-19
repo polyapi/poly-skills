@@ -1,6 +1,6 @@
 ---
 name: artefacts-usage
-description: Use before creating or changing PolyAPI TypeScript artifact JSON, workflow layout, or webhook and trigger wiring and the task needs concrete rules for artifacts, folders, and runtime alignment.
+description: Use before creating or changing PolyAPI TypeScript artifact JSON, workflow layout, or webhook-to-function and trigger wiring and the task needs concrete rules for artifacts, folders, and runtime alignment.
 ---
 
 # TypeScript Artefacts Usage
@@ -42,10 +42,14 @@ Do not use this skill:
 - Standard artifact directories are `schemas/`, `specs/`, `webhooks/`,
   `triggers/`, `vari/`, `tabi/`, `jobs/`, and optional `canopy/`.
 - Keep deployed names and contexts aligned across the TypeScript entrypoint,
-  inline metadata or function JSON, webhook artifact, and trigger artifact.
+  inline metadata or function JSON, webhook artifact, and any trigger artifact.
 - One public endpoint should map to one explicit webhook artifact.
-- When a webhook calls code, add or update the matching trigger in the same
-  change.
+- When a webhook calls code, bind it directly with `serverFunction` in the
+  webhook JSON by default. Add a trigger only for fire-and-forget handling
+  (`waitForResponse: false`), several functions per webhook, or wiring that
+  must be enabled or disabled separately.
+- Never bind a function and also attach a trigger to the same webhook: the
+  binding wins and the trigger silently stops firing.
 - Use `vari` for config, secrets, retry policies, token caches, and other
   runtime configuration.
 - Use `tabi` for persisted workflow state, lookup tables, and idempotency or
@@ -64,8 +68,9 @@ tooling and sync expectations, also use
 
 ## Common Mistakes
 
-- Updating `server/*.ts` or `client/*.ts` but forgetting the matching webhook,
-  trigger, or schema change
+- Updating `server/*.ts` or `client/*.ts` but forgetting the matching webhook
+  binding, trigger, or schema change
+- Adding a trigger out of habit when the webhook can bind its function directly
 - Treating runtime workflow state as `vari` config when it should be modeled in
   `tabi`
 - Creating a catch-all webhook instead of one explicit endpoint contract

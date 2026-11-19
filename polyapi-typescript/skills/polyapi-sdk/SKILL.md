@@ -18,7 +18,7 @@ the concrete examples and command-discovery checklist behind these rules.
 ## When to Use
 
 - Before writing any PolyAPI TypeScript client or server function
-- When wiring TypeScript code to webhook or trigger artifacts
+- When wiring TypeScript code to a webhook (direct binding or trigger)
 - When changing package, toolchain, build, or sync commands
 - When debugging generated type, context, or sync failures
 - When reviewing whether code matches the active repo’s PolyAPI runtime pattern
@@ -50,7 +50,8 @@ Do not use this skill:
 - After changing TypeScript or artifacts, run the repo’s sync path and relevant
   tests before finishing.
 - Treat the pinned `polyapi` package version as infrastructure. Upgrade it
-  deliberately, not casually.
+  deliberately, not casually. For PolyAPI Release 35 the TypeScript template
+  uses `polyapi` `0.28.6`; its Flow warns when the SDK is older than `0.28.1`.
 
 ## Implementation
 
@@ -61,7 +62,9 @@ for artifact layout and wiring.
 
 ## Flow Operations
 
-For scoped resource deletion or server-function log retrieval, read
+For scoped resource deletion, server-function log retrieval, running a job
+once, or Release 35 push behaviour (webhook bindings, job intervals,
+subscription updates, server-function settings), read
 [`references/FLOW.md`](./references/FLOW.md). It covers current command
 discovery, preview/apply boundaries, descendant contexts, readback verification
 and log pagination. Use the project's Flow capabilities when available.

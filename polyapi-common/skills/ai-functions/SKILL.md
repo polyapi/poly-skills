@@ -74,4 +74,8 @@ Make logs useful for later optimization: preserve the contract version, inputs a
 Use portable Flow references: `functionName` with `functionContext`, and `variableName` with `variableContext`. Never emit environment-specific `id`, `variableId`, `systemPromptVariableId`, `toolFunctionIds`, or `contextName`.
 Function reference contexts do not need to start with `POLYAPI_NAMESPACE`: they may identify any exact environment, tenant, or public function accessible to the target PolyAPI environment. Keep variable references and the AI Function artefact's own `context` inside `POLYAPI_NAMESPACE`.
 
+`outputSchema` and `errorSchema` must have an object at the root (`type: "object"`, or `properties` without a `type`); root primitives, arrays, `anyOf`/`oneOf`/`allOf`, `enum`, and `const` are rejected. An `errorSchema` also needs an `outputSchema`, a required `status` fixed to `"failed"`, and a required string `message`.
+
+For `VOICE` AI Functions only, `voiceInitialMessage: null` skips the spoken greeting, and `twilioAuthTokenVariable: { variableName, variableContext }` must reference a SECRET vari holding the customer's own Twilio auth token; `null` reverts to the platform's Twilio credentials.
+
 Read [references/examples.md](references/examples.md) before proposing or implementing an AI Function. It contains complete approval proposals, evolution plans, and valid Flow artefacts.

@@ -31,7 +31,10 @@ context only unless they match maintained checked-in patterns.
 
 ## Workflow Model
 
-- PolyAPI runtime flow is: schemas -> webhooks -> triggers -> functions.
+- PolyAPI runtime flow is: schemas -> webhooks -> functions. A webhook binds
+  its server function directly by default; add a trigger only when needed
+  (fire-and-forget, several functions per webhook, or separately switchable
+  wiring). Never configure both on one webhook.
 - Keep one workflow per `src/<workflow>/` folder.
 - Python repos commonly keep `server/`, `client/`, `types/`, `tests/`,
   `artefacts/`, `deployment/`, and `scripts/` together under the workflow.
@@ -95,9 +98,9 @@ context only unless they match maintained checked-in patterns.
 - Preserve existing repo behaviour and checked-in patterns unless the user
   explicitly asks to change them.
 - Reuse existing shared components before introducing new ones.
-- Do not invent new namespaces, webhook shapes, trigger wiring, logger
-  patterns, or error envelopes without checking comparable maintained workflows
-  first.
+- Do not invent new namespaces, webhook shapes, webhook-to-function wiring,
+  logger patterns, or error envelopes without checking comparable maintained
+  workflows first.
 - Keep outputs deterministic and boundary behaviour explicit.
 - Handle errors explicitly and log without exposing secrets.
 

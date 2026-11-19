@@ -10,8 +10,8 @@ description: Use when you need a language-agnostic explanation of core PolyAPI c
 PolyAPI implementations are made of a small set of constructs that work together:
 
 - **Schemas** define contracts (request/response shapes, validation boundaries).
-- **Webhooks** expose entrypoints.
-- **Triggers** connect entrypoints to server functions.
+- **Webhooks** expose entrypoints and, by default, name the server function they run.
+- **Triggers** connect entrypoints to server functions when a direct binding is not enough.
 - **Functions** implement the logic.
 - **Jobs** run scheduled entrypoints.
 - **Vari (Variables)** store config and small runtime state.
@@ -40,14 +40,23 @@ Do not use this skill for:
 
 A common execution path is:
 
-- **Schemas → Webhooks → Triggers → Functions**
+- **Schemas → Webhooks → Functions** (the webhook binds its server function directly)
+- **Schemas → Webhooks → Triggers → Functions** (only when a trigger is needed)
 
 Where:
 
 - **Schemas** constrain inputs/outputs.
-- **Webhooks** receive requests.
-- **Triggers** route/bridge execution to a server function.
+- **Webhooks** receive requests. A webhook can name one server function
+  (`serverFunctionId`); PolyAPI then calls it synchronously and returns its
+  response as the webhook's response.
+- **Triggers** route execution to a server function when the webhook has no
+  direct binding (see decision rules below).
 - **Functions** orchestrate business logic and call downstream systems.
+
+A bound function receives the same `(eventPayload, headers, params)` arguments
+as a trigger-invoked one, so handler signatures do not change. A webhook that
+serves several routes usually binds one "router" server function that
+dispatches by subpath or event type.
 
 Other entrypoints:
 
@@ -62,8 +71,8 @@ Supporting constructs:
 | Construct | What it is | Typical use |
 | --- | --- | --- |
 | Schema | A contract for a payload | Validate webhook requests/responses; document function I/O |
-| Webhook | Public/receivable entrypoint | Expose an integration endpoint to the outside world |
-| Trigger | Wiring between entrypoint and code | Connect a webhook (or other entry) to a specific server function |
+| Webhook | Public/receivable entrypoint, optionally bound to one server function | Expose an integration endpoint and run its handler or router function |
+| Trigger | Separate wiring between an entrypoint and code | Fire-and-forget handling, several functions per webhook, or wiring you enable/disable on its own |
 | Server function | Backend business logic | Orchestrate calls, validate inputs, map fields, apply policies |
 | Client function | Reusable client-side logic | Shared helpers, parsing/normalization, request building |
 | Job | Scheduled entrypoint | Polling, periodic sync, retention cleanup, retries |
@@ -77,14 +86,22 @@ Supporting constructs:
 ### Webhook vs Trigger vs Job
 
 - Use a **webhook** when an external system (or user-facing flow) needs to call into PolyAPI via an endpoint.
-- Use a **trigger** when you need a stable, explicit wiring layer between an entrypoint and a server function (it makes routing and review easier than “implicit” linkage).
+- By default, **bind the webhook directly to its server function**. The call is synchronous: the function's response is the webhook's response, and the webhook's `responseStatus` still applies.
+- Use a **trigger** instead only when you need:
+  - fire-and-forget handling (`waitForResponse: false`);
+  - several functions reacting to the same webhook; or
+  - wiring you can enable or disable separately from the webhook.
+- Never configure both on one webhook. When a webhook has a direct binding, its triggers are skipped for calls in the webhook's own environment, so the trigger silently stops firing. Webhook listeners are still notified.
+- The bound function must be in the webhook's environment, tenant-visible in the same tenant, or public. PolyAPI checks this on every call.
 - Use a **job** when the driver is time/schedule rather than an inbound request.
 
 If you’re unsure, look for the “true driver”:
 
-- inbound HTTP/event → webhook
-- glue/wiring between entry and server function → trigger
+- inbound HTTP/event → webhook bound to its server function
+- async, fan-out, or separately switchable wiring → webhook plus trigger
 - clock/time → job
+
+Error-handler triggers (`source: errorHandler`, reacting to function failures) are unrelated to webhooks and are unchanged.
 
 ### Vari vs Secret vs Tabi
 

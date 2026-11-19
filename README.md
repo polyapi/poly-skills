@@ -62,6 +62,12 @@ For Python, use `polyapi-python` in place of `polyapi-typescript`.
 Copy each **whole skill folder**, including supporting files, and keep its name.
 Add any companion skills required by the selected skill or playbook.
 
+Projects built from the PolyAPI TypeScript or Python project templates can let
+Flow install and refresh these skills instead: run `flow skills add typescript`
+or `flow skills add python` (`pnpm flow skills ...` in TypeScript), then
+`flow skills update` to pick up later changes. Flow installs the `general`,
+`polyapi-common`, and language packs into `.agents/skills/`.
+
 Add relevant entrypoints to your root `AGENTS.md`, for example:
 
 ```markdown

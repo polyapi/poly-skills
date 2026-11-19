@@ -22,6 +22,11 @@ Load this skill before creating any artefact JSON file, before laying out a new 
 
 - One webhook JSON per public endpoint — never collapse multiple endpoints into one generic webhook.
 - Every webhook must have an explicit subpath — never use a catch-all pattern for new public endpoints.
+- Bind a webhook to its server function with `serverFunction` in the webhook
+  JSON by default. Add a trigger only for fire-and-forget handling
+  (`waitForResponse: false`), several functions per webhook, or wiring that must
+  be enabled or disabled separately. Never use both on one webhook: the binding
+  wins and the trigger silently stops firing.
 - Use the selected instance's `/swagger-json` or its saved contract for JSON
   field shapes. When present, also inspect the repo's adapter/validators; local
   artefact references may be translated before reaching the platform API.
@@ -40,7 +45,7 @@ Load this skill before creating any artefact JSON file, before laying out a new 
 - Follow the shared utility layout under `src/utilities/<utility_name>/` when code is reused across workflows.
 - Use `snake_case` for all Python files and JSON artefact files.
 - Create one webhook JSON per public endpoint.
-- Add a paired trigger JSON when the target repo checks in trigger artefacts for public endpoints.
+- Bind each webhook that calls code to its server function; add a trigger JSON only when a direct binding is not enough, and then remove the binding.
 - Preserve existing public status codes and explicit request and response schemas.
 - Use secret variables for passwords, tokens, and API keys.
 - Treat XML handling as an explicit webhook boundary concern.

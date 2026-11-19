@@ -26,7 +26,7 @@ src/<workflow_name>/
       <name>.json
     webhooks/
       <name>_hook.json
-    triggers/
+    triggers/            # only when a direct binding is not enough
       <name>_trigger.json
     vari/
       <name>_vari.json
@@ -107,6 +107,10 @@ Notes:
   "responsePayload": {},
   "responseStatus": 200,
   "slug": "<project slug or token>",
+  "serverFunction": {
+    "functionName": "<name>_sfx",
+    "functionContext": "<context.name>"
+  },
   "xmlParserOptions": {
     "enabled": false,
     "explicitArray": false,
@@ -120,15 +124,35 @@ Notes:
 
 | Field | Rule |
 | --- | --- |
-| `name` | Follow the repo's deployed naming convention; `_hook` is an example suffix. Keep paired webhook/trigger base names aligned where practical. |
+| `name` | Follow the repo's deployed naming convention; `_hook` is an example suffix. Keep the webhook and its bound function's base names aligned where practical, and a trigger's too when one is used. |
 | `context` | Must follow the target repo's naming conventions. |
 | `subpath` | Must match the intended public URL, including path params as `{param}` and query params as `?key={key}`. |
 | `method` | Upper case. |
 | `eventPayloadTypeSchema` | Full JSON Schema of the request body when the endpoint accepts a body. Omit it or use the repo's established empty-body pattern when there is no body. |
-| `responsePayload` | Default response body when a trigger supplies no response data. |
+| `responsePayload` | Default response body when the bound function or trigger supplies no response data. |
 | `responseStatus` | Preserve the endpoint's intended status code. |
 | `slug` | Follow the checked-in repo convention. Preserve placeholder tokens when the repo uses them. |
+| `serverFunction` | The server function the webhook runs, by `functionName` and `functionContext`. Flow resolves it to `serverFunctionId`; deploy the function first. `null` removes the binding; omitting the field leaves it unmanaged. Omit it when a trigger handles the webhook. |
 | `xmlParserOptions.enabled` | Set to `true` only when the caller sends XML that must be parsed. |
+
+### Wiring the webhook to code
+
+- Bind the webhook directly to its server function by default. The function
+  receives `(event_payload, headers, params)` as it would from a trigger, so its
+  signature does not change.
+- The call is synchronous: the function's response is the webhook's response,
+  and `responseStatus` still applies.
+- The function must be in the webhook's environment, tenant-visible in the same
+  tenant, or public. PolyAPI checks this on every call.
+- A webhook serving several routes or event types usually binds one router
+  function that dispatches by subpath or event type.
+- Use a trigger instead only for fire-and-forget handling
+  (`waitForResponse: false`), several functions reacting to one webhook, or
+  wiring you can enable or disable on its own.
+- Never configure both. With a binding, the webhook's triggers are skipped for
+  calls in its own environment, so the trigger silently stops firing. Webhook
+  listeners are still notified. Error-handler triggers (`source: errorHandler`)
+  are unrelated to webhooks.
 
 ### XML parsing options
 
@@ -184,6 +208,10 @@ Array shape, whitespace trimming, and lowercasing tags can change the payload.
 Where the repo's resolver supports it, use `functionName` and `functionContext`
 in place of a job function's `id`; the resolver supplies the selected target ID.
 Keep `enabled` at the intended state.
+
+An interval `value` is a whole number of minutes (`60`) or a duration string
+(`"30s"`, `"15m"`, `"2h"`). The minimum is 10 seconds. Run a deployed job once,
+outside its schedule, with `flow jobs run <name> [--dry-run]`.
 
 ## Tabi artefact
 

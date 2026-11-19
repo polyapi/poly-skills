@@ -44,8 +44,14 @@ const polyConfig: PolyServerFunction = {
 };
 ```
 
-Keep this aligned with the deployed function name and context used by matching
-trigger artifacts.
+Keep this aligned with the deployed function name and context referenced by the
+webhook's `serverFunction` binding or, when one is used, a trigger artifact.
+
+Server functions can also set two runtime settings in `polyConfig`:
+`serverSideAsync: true` ("Run in Background": a call returns `202` with an
+execution ID and can run longer than 30 minutes) and `containerConcurrency`
+(requests per replica; `null` removes the override). When only these settings
+change, Flow applies them without redeploying the code.
 
 Other repos may use separate function metadata JSON instead. Follow the active
 repo pattern; do not mix patterns inside one codebase unless the repo already
@@ -66,6 +72,13 @@ export default async function routePaymentEvent(
 
 Prefer generated `schemas.*` and `tabi.*` types directly when they already
 represent the real platform contract.
+
+A server function that handles a webhook receives `(eventPayload, headers,
+params)`: the request body, the request headers, and the query and path
+parameters. The arguments are the same whether the function is bound directly
+to the webhook (the default) or invoked through a trigger. With a direct
+binding the call is synchronous and the function's response is the webhook's
+response.
 
 ## Status Handling
 
@@ -125,6 +138,7 @@ access.
 - If a generated path was missing, was the artefact deployed and SDK
   regenerated instead of bypassing the type system?
 - Does the entrypoint use generated platform types where available?
-- Does metadata stay aligned with deployed context and trigger wiring?
+- Does metadata stay aligned with deployed context and the webhook binding or
+  trigger wiring?
 - Did the change follow the repo’s existing build or sync path?
 - Was the pinned `polyapi` version treated as an intentional dependency?

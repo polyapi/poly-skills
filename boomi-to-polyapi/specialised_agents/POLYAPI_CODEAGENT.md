@@ -194,8 +194,11 @@ Propose a concrete plan including:
 -   workflow name
 -   folder under `workflows/src/`
 -   files to create or update
--   webhook artifacts, one per public endpoint
--   triggers
+-   webhook artifacts, one per public endpoint, each bound directly to its
+    server function with `serverFunction`
+-   triggers, only where a direct binding is not enough (fire-and-forget,
+    several functions per webhook, or separately switchable wiring); never both
+    on one webhook
 -   server functions
 -   client functions
 -   utilities or adapters
@@ -263,7 +266,7 @@ design or confirmed Boomi behavior requires a different PolyAPI construct.
 | Boomi construct or behavior                                                | PolyAPI construct or implementation                                                                                                    |
 | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | API Service / HTTP listener style entrypoint                               | Webhook                                                                                                                                |
-| Public endpoint route to logic                                             | Trigger                                                                                                                                |
+| Public endpoint route to logic                                             | Server function bound directly to the webhook (`serverFunction`); trigger only when needed                                             |
 | Main process XML / top-level integration flow                              | Server function orchestrator                                                                                                           |
 | Referenced subprocess XML                                                  | Client function                                                                                                                        |
 | Reusable subprocess shared across workflows                                | Client function under `workflows/src/utilities/` when callable through PolyAPI, or shared utility only when it is pure local code      |
@@ -464,7 +467,7 @@ Depending on the design, that may include:
 -   `client/*.ts` and matching metadata JSON
 -   `artifacts/schemas/*.json`
 -   `artifacts/webhooks/*.json`
--   `artifacts/triggers/*.json`
+-   `artifacts/triggers/*.json`, only when a webhook needs a trigger
 -   `artifacts/vari/*.json`
 -   `artifacts/jobs/*.json`
 -   `artifacts/tabi/*.json`
@@ -488,8 +491,9 @@ Never silently ship reduced behavior because the diagram is high-level.
 -   Keep function metadata JSON aligned with the `.ts` entrypoint beside it.
 -   Keep contexts namespaced with `POLYAPI_NAMESPACE`.
 -   Reuse existing utilities, schemas, and artifact patterns where they genuinely fit.
--   Keep contracts explicit: request schema, response schema, webhook, trigger,
-    variable, job, and table definitions should all agree with the code.
+-   Keep contracts explicit: request schema, response schema, webhook and its
+    server-function binding, any trigger, variable, job, and table definitions
+    should all agree with the code.
 -   Derive variables, secrets, jobs, tables, and package needs from Boomi source
     behavior and the planned TypeScript code. Do not make them manual preflight
     inputs.

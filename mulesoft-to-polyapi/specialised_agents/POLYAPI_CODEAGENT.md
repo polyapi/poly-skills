@@ -102,7 +102,7 @@ Before writing any code, the agent must perform a preflight repo-convention chec
 - the relevant service facade entrypoint
 - the deployment script used by that workflow
 - the active router used by that workflow
-- one existing webhook and trigger pair for a comparable public endpoint
+- one existing webhook for a comparable public endpoint, with its direct server-function binding or, in older workflows, its paired trigger
 
 When target-repo docs drift from the checked-in implementation, prefer
 executable checked-in repo patterns under the target repo's source tree.
@@ -191,7 +191,7 @@ Key constraints:
 - when the caller sends or receives XML, set `xmlParserOptions.enabled: true` to match Mule parsing behaviour
 - when Mule calls a downstream API, derive request and response shapes from the real downstream contract — do not use ad-hoc dicts
 - always check for an existing shared utility before creating a new one; if you choose not to reuse, explain why during playback
-- for public endpoints in this repo, create a paired trigger artefact and wire it to `gha.utils.generic.router_handler` unless the checked-in target workflow already follows a different pattern
+- for public endpoints in this repo, bind each webhook directly to `gha.utils.generic.router_handler` with `serverFunction` in the webhook JSON unless the checked-in target workflow already follows a different pattern; create a trigger artefact only when the endpoint needs fire-and-forget handling, several functions, or separately switchable wiring, and never both on one webhook
 - HTTP status codes, error codes, error payload shape, and meaningful error messages are part of the migration contract — preserve them
 
 ---
@@ -274,8 +274,8 @@ The agent must propose a concrete plan including:
 - workflow name
 - folder to create under the target repo
 - files to create
-- one webhook JSON artefact per public endpoint
-- triggers
+- one webhook JSON artefact per public endpoint, with its `serverFunction` binding
+- triggers, only where a direct binding is not enough
 - server functions
 - client functions
 - utilities
@@ -352,6 +352,7 @@ For each `webhooks.jsonl` entry, check and correct only the following using
 | `responseStatus` | Default `200`. Check `compressed.txt` — if the flow's error handler or HTTP response step returns a different status code for the success path, update it. |
 | `xmlParserOptions.enabled` | Default `false`. Set `true` only if `compressed.txt` shows this flow produces or consumes XML (`application/xml` media type, `xml:transform` step, or explicit xmlParserOptions in the flow). |
 | `xmlParserOptions.*` | If `enabled` is `true`, set `explicitArray`, `normalizeTags`, `trim` to match Mule behaviour visible in `compressed.txt`. |
+| `serverFunction` | Add `{ "functionContext": "gha.utils.generic", "functionName": "router_handler" }` unless the endpoint needs a trigger (see below). |
 
 ### One artefact file per endpoint
 
@@ -364,18 +365,40 @@ Write each corrected webhook object as a single `.json` file under:
 File naming follows the naming-conventions skill.
 Do not merge multiple endpoints into one file.
 
-The agent must also create:
+By default, each webhook binds the router directly:
+
+```json
+{
+  "serverFunction": {
+    "functionContext": "gha.utils.generic",
+    "functionName": "router_handler"
+  }
+}
+```
+
+The router receives the same `(event, headers, params)` arguments as it would
+from a trigger, and its response is the webhook's response. It must be visible
+to the webhook's environment (same environment, tenant-visible in the same
+tenant, or public); PolyAPI checks this on every call.
+
+Create a trigger instead only when the endpoint needs fire-and-forget handling
+(`waitForResponse: false`), several functions reacting to it, or wiring that
+must be enabled or disabled separately. Then omit `serverFunction` from the
+webhook and create:
 
 ```sh
 <TARGET_REPO>/<workflow_path>/artefacts/triggers/<name>_trigger.json
 ```
 
-The trigger should follow the checked-in GHA pattern for public endpoints:
+with:
 
 - `source.webhookContext` = webhook context
 - `source.webhookName` = webhook name
 - `destination.functionContext` = `gha.utils.generic`
 - `destination.functionName` = `router_handler`
+
+Never configure both on one webhook: with a binding, the webhook's triggers are
+skipped for calls in its own environment, so the trigger silently stops firing.
 
 The agent must also create:
 
@@ -386,7 +409,7 @@ The `OVERVIEW.md` must describe:
 - the integration purpose
 - the original Mule project
 - the PolyAPI implementation components
-- webhooks, triggers, jobs
+- webhooks and their server-function bindings, any triggers, and jobs
 - required configuration
 - required secrets
 - downstream systems
@@ -436,7 +459,7 @@ Default mappings:
 | MuleSoft | PolyAPI |
 | ------ | ------ |
 | HTTP Listener | Webhook |
-| APIKit router | Trigger |
+| APIKit router | Router server function bound directly to the webhook (trigger only when needed) |
 | Flow | Server function |
 | Sub-flow | Client function |
 | DataWeave transform | Code transform |
