@@ -49,13 +49,15 @@ python -m polyapi function add normalize_event ./client/normalize_event_cfx.py -
 
 ## Webhook-linked SFX contract
 
-A common webhook-trigger mapping passes these arguments. Verify the actual
-contract; this is not every server or security function's signature:
+A webhook passes these arguments to its server function, whether the function
+is bound directly to the webhook (the default) or invoked through a trigger.
+Verify the actual contract; this is not every server or security function's
+signature:
 
 | Argument | Type | Notes |
 | --- | --- | --- |
 | `__event` | `dict` | Request body or event payload |
-| `headers` | `dict` | HTTP or trigger headers |
+| `headers` | `dict` | HTTP request headers |
 | `params` | `dict` | Query and path parameters |
 
 In router-driven HTTP flows, `headers` often includes `X-Http-Method`, `X-Original-Uri`, `Authorization`, and `X-Force-Log`.

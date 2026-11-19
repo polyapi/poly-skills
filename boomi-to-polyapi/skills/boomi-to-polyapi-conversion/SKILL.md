@@ -235,7 +235,8 @@ proposed correction.
    format conversion
 7. Dependencies (systems, variables, side effects)
 8. Workflow name and file plan under `workflows/src/<integrationName>/`
-9. Webhooks, triggers, server functions, client functions, utilities/adapters,
+9. Webhooks and their direct server-function bindings, triggers (only where a
+   binding is not enough), server functions, client functions, utilities/adapters,
    variables, secrets, `tabi` tables, jobs, downstream integrations, schema sources,
    XML/JSON handling, status-code parity, tests, and reuse of existing patterns
 10. PolyAPI construct mapping from Boomi source constructs to proposed artifacts
@@ -309,6 +310,12 @@ Preserve exact Boomi behavior unless a change is explicitly approved.
 
 Keep webhook, trigger, schema, and function artifacts aligned with implemented
 TypeScript behavior and the Boomi boundary contract.
+
+Bind each webhook directly to its server function with `serverFunction` in the
+webhook JSON. Add a trigger only when the endpoint needs fire-and-forget
+handling, several functions, or separately switchable wiring, and never
+configure both on one webhook: the binding wins and the trigger silently stops
+firing.
 
 Create derived `vari` artifacts during implementation when runtime code or Boomi
 evidence requires them. Keep secret values out of source files.
@@ -480,9 +487,10 @@ The new `poly.<namespace>.<integrationName>.<clientFunctionName>` paths are now
 typed and available. Replace any `(poly as any)` casts in server functions with
 the correctly typed `poly.*` calls before proceeding.
 
-**Phase 4 — server functions, webhooks, and triggers**
+**Phase 4 — server functions, webhooks, and any triggers**
 
-Show gate. On approval:
+Show gate. On approval, deploy server functions before the webhooks that bind
+them. Push `triggers/` only if the plan includes triggers:
 
 ```bash
 pnpm workflows push --paths src/<integrationName>/server/

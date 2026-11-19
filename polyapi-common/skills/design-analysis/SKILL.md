@@ -31,7 +31,7 @@ When the diagram is not explicit enough to choose the correct PolyAPI construct 
 
 | Colour | Meaning |
 |---|---|
-| Red | Entry artefact: webhook endpoint, trigger, or job |
+| Red | Entry artefact: webhook endpoint (usually bound to its server function), trigger, or job |
 | Blue | Server function |
 | Yellow | Client function or client-side logic block |
 | Green | Variable, secret, or Tabi |
@@ -44,15 +44,16 @@ Red boxes are not business logic. They represent the mechanism that starts execu
 
 They may mean:
 
-- a webhook endpoint / API endpoint
-- a trigger wired to a webhook
+- a webhook endpoint / API endpoint, bound directly to its server function by default
+- a trigger wired to a webhook, only when the design needs one (see below)
 - a job / scheduler entrypoint
 
 Use nearby labels and arrows to decide which one it is:
 
 - scheduled or time-based language usually means a job
 - public URL or API semantics usually means a webhook endpoint
-- a routing bridge between an entrypoint and a server function usually means a trigger
+- an inbound endpoint that calls one server function, or a router function, usually means a webhook with a direct server-function binding
+- fire-and-forget handling, several functions reacting to one webhook, or wiring that must be switched on and off separately means a trigger
 
 If it is still not clear which artefact is intended, ask the user before deciding.
 

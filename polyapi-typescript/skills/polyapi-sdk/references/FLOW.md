@@ -91,3 +91,30 @@ apply. Logs can contain credentials or customer payloads: retrieve a bounded,
 relevant page and redact sensitive content before reporting or saving it.
 Report function, target, page/filter, timestamps and relevant events, without
 claiming an upstream side effect succeeded solely because a handler returned.
+
+## Push Behaviour to Expect
+
+These apply to the current TypeScript Flow template with PolyAPI Release 35.
+Confirm with local help and `cli/README.md` before relying on them.
+
+- **Webhook bindings:** `serverFunction: { functionName, functionContext }` in
+  a webhook artefact resolves to `serverFunctionId`. Deploy the function first.
+  `null` removes the binding; omitting the field leaves it unmanaged.
+- **Jobs:** an interval `value` is a whole number of minutes or a duration
+  string (`"10s"`, `"30m"`, `"2h"`); the minimum is 10 seconds. Run a deployed
+  job once with `pnpm flow jobs run <name> --dry-run`, then without
+  `--dry-run`. It uses the same target and production checks as `push`, and
+  leaves the schedule and `enabled` flag unchanged.
+- **GraphQL subscriptions:** non-structural settings (`description`,
+  `visibility`, `enabled`, `functionParams`, `ohipMaintainOffset`,
+  `eventInactivityThresholdMs`, and similar) are updated in place, without a
+  delete and recreate. Changes to `type`, `transportProtocol`, `websocketUrl`,
+  `query`, or the destination function are structural: they are skipped unless
+  `--force` is passed and a typed `YES` confirms the delete and recreate.
+  Recreation can reset stream offsets, so get explicit authorization first.
+- **Server-function settings:** when only `serverSideAsync` or
+  `containerConcurrency` changes, Flow patches the function without redeploying
+  its code.
+- **Agent skills:** `pnpm flow skills add typescript` installs these skills
+  into `.agents/skills/`, and `pnpm flow skills update` refreshes them. Use
+  `--dry-run` to preview an update.

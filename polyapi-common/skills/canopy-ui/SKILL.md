@@ -146,6 +146,7 @@ The deployed app is reachable at `/canopy/<subpath>/login`.
 
 - `allowAppSwitcher: false` hides the app-switcher button so users cannot navigate to other Canopy applications.
 - `allowEnvironmentSwitcher: false` hides the environment switcher — use when the customer should be locked to one environment.
+- `publicAccess: true` lets anyone with the link open a **PUBLIC** app without signing in; it is ignored for other visibilities. Its functions then run under a narrow built-in permission set, so expose only functions that are safe for anonymous callers. Never enable it without the user's explicit approval. Flow requires `visibility: PUBLIC` and an interactive confirmation before turning it on.
 - `description` is shown in PolyUI's app list; it does not appear in the rendered UI.
 - `icon` is the application logo used in app chrome such as the sidebar.
 - If you want one consistent logo everywhere, set all three: `icon`, `login.logoSrc`, and `signUp.logoSrc`.

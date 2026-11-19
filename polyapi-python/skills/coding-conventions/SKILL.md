@@ -40,7 +40,7 @@ filenames. Do not rename deployed resources to enforce a filename convention.
 | Client function | `_cfx.py` | `sdk_call_with_retry_cfx.py` |
 | Types file | `_types.py` | `member_info_types.py` |
 | Webhook artefact | `_hook.json` | `get_member_balance_hook.json` |
-| Trigger artefact | `_trigger.json` | `get_member_balance_trigger.json` |
+| Trigger artefact (only when used) | `_trigger.json` | `get_member_balance_trigger.json` |
 | Variable artefact | `_vari.json` | `currency_config_vari.json` |
 | Job artefact | `_job.json` | `sync_rates_job.json` |
 | Tabi artefact | `_tabi.json` | `currency_map_tabi.json` |
@@ -58,4 +58,6 @@ deployer, keep required runtime types in the submitted file.
 
 - Never use camelCase for newly authored Python files or artefact file names.
 - Keep the deployed function name, file base name, and artefact base name aligned where practical. Preserve deployed identity fields during filename-only changes.
-- For project-specific namespace families, slug tokens, logger contexts, credential namespaces, or webhook/trigger pairing rules, follow the active repo's standards overlay.
+- Name a webhook and the server function it binds with the same base name, for example `get_member_balance_hook.json` and `get_member_balance_sfx.py`. When a webhook binds a shared router function, name the webhook for its endpoint instead.
+- Add a matching `_trigger.json` with the same base name only when the webhook uses a trigger instead of a direct binding.
+- For project-specific namespace families, slug tokens, logger contexts, credential namespaces, or webhook/function pairing rules, follow the active repo's standards overlay.

@@ -31,7 +31,10 @@ context only unless they match maintained checked-in patterns.
 
 ## Workflow Model
 
-- PolyAPI runtime flow is usually schemas, webhooks, triggers, and functions.
+- PolyAPI runtime flow is usually schemas, webhooks, and functions: a webhook
+  binds its server function directly by default, and a trigger sits between
+  them only when needed (fire-and-forget, several functions per webhook, or
+  separately switchable wiring). Never configure both on one webhook.
   GraphQL subscriptions, jobs, `vari`, `tabi`, and Canopy artefacts may also
   participate depending on the repo.
 - Keep one workflow per `src/<workflow>/` or `workflows/src/<workflow>/`
@@ -67,7 +70,7 @@ context only unless they match maintained checked-in patterns.
 - Prefer generated `schemas.*` and `tabi.*` types when they represent the
   platform contract.
 - Keep function metadata aligned with deployed function names, contexts, and
-  trigger or subscription wiring.
+  webhook binding, trigger, or subscription wiring.
 
 ## Environment and Tooling
 
@@ -115,9 +118,9 @@ context only unless they match maintained checked-in patterns.
 - Preserve existing repo behaviour and checked-in patterns unless the user
   explicitly asks to change them.
 - Reuse existing shared components before introducing new ones.
-- Do not invent new namespaces, webhook shapes, trigger wiring, logger
-  patterns, or error envelopes without checking comparable maintained workflows
-  first.
+- Do not invent new namespaces, webhook shapes, webhook-to-function wiring,
+  logger patterns, or error envelopes without checking comparable maintained
+  workflows first.
 - Keep outputs deterministic and boundary behaviour explicit.
 - Handle errors explicitly and log without exposing secrets.
 
