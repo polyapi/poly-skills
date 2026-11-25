@@ -33,39 +33,47 @@ working platform deployment.
 
 ## Integration Test Rules
 
-Use integration tests for deployed PolyAPI behavior:
+For a user-visible change, give the command or steps to start the app and drive
+one flow through its normal entry point. Assert the outcome the user expects.
+For an asynchronous route, check what reached the intended destination.
+
+Before enabling the mutation, use the project's normal checks to confirm the
+active SDK deployment and the inbox both belong to the intended test environment.
+If either target is unverified, leave the test disabled. Replace the example's
+`workflows/test.env` with the project's verified test profile.
+
+In this example the route maps an input `kind` to an output
+`type` and preserves the marker. A GET to `TEST_INBOX_URL` with a `marker`
+query parameter waits for the matching event and returns it as JSON.
+Use your project's generated callable and destination fixture for these roles.
 
 ```typescript
-import poly from 'polyapi';
+import { randomUUID } from 'node:crypto';
 import test from 'ava';
+import poly from 'polyapi';
 
-test.serial('routeEvent deployed function accepts the deployed payload contract', async t => {
-  const result = await poly.example.events.routeEvent(event, {});
-  t.truthy(result);
-});
-```
-
-Guard production by default:
-
-```typescript
-const envPath = process.env.ENVPATH || 'workflows/dev.env';
-if (envPath.endsWith('prod.env')) {
-  throw new Error('Refusing to run integration tests against prod.env.');
-}
-```
-
-Gate external mutations:
-
-```typescript
 const RUN_MUTATING_INTEGRATION =
   process.env.RUN_MUTATING_INTEGRATION === 'true';
 
 if (RUN_MUTATING_INTEGRATION) {
-  test.serial('updates the external system', async () => {
-    await poly.example.system.updateThing(input);
+  test.serial('delivers the order event to the configured inbox', async t => {
+    t.timeout(10_000);
+    if (process.env.ENVPATH !== 'workflows/test.env') {
+      throw new Error('Refusing to route outside the configured test profile');
+    }
+    const inbox = process.env.TEST_INBOX_URL;
+    if (!inbox) throw new Error('TEST_INBOX_URL is required');
+    const marker = randomUUID();
+    const lookup = new URL(inbox);
+    lookup.searchParams.set('marker', marker);
+
+    await poly.example.events.routeEvent({ marker, kind: 'order.created' }, {});
+    const delivery = await fetch(lookup, { signal: AbortSignal.timeout(5_000) });
+    t.is(delivery.status, 200);
+    t.like(await delivery.json(), { marker, type: 'order.created' });
   });
 } else {
-  test.skip('updates the external system', async () => {});
+  test.skip('delivers the order event to the configured inbox', async () => {});
 }
 ```
 
