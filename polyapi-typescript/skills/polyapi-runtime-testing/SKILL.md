@@ -33,9 +33,10 @@ working platform deployment.
 
 ## Integration Test Rules
 
-For a user-visible change, give the command or steps to start the app and drive
-one flow through its normal entry point. Assert the outcome the user expects.
-For an asynchronous route, check what reached the intended destination.
+When a change affects an observable workflow outcome, use the project's
+existing command or runbook to drive that flow through its normal entry point.
+Assert the affected outcome. For asynchronous delivery, reuse the project's
+destination check and its timeout.
 
 Before enabling the mutation, use the project's normal checks to confirm the
 active SDK deployment and the inbox both belong to the intended test environment.
@@ -45,7 +46,7 @@ If either target is unverified, leave the test disabled. Replace the example's
 In this example the route maps an input `kind` to an output
 `type` and preserves the marker. A GET to `TEST_INBOX_URL` with a `marker`
 query parameter waits for the matching event and returns it as JSON.
-Use your project's generated callable and destination fixture for these roles.
+Adapt the generated callable to your project. The inbox and timeouts are examples.
 
 ```typescript
 import { randomUUID } from 'node:crypto';
