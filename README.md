@@ -18,7 +18,7 @@ when you need them. Each pack links to its skills and supporting references.
 | --- | --- |
 | [TypeScript](./polyapi-typescript/README.md) | Build workflows with SDK, coding, artefact, API training, and runtime-testing guidance. |
 | [Python](./polyapi-python/README.md) | Build workflows with Python SDK, coding, artefact, and API training guidance. |
-| [PolyAPI foundations](./polyapi-common/README.md) | Choose constructs, interpret designs, work with AI Functions and Tabi, build Canopy apps, and document workflows. |
+| [PolyAPI foundations](./polyapi-common/README.md) | Choose constructs, interpret designs, work with AI Functions, MCP servers, and Tabi, build Canopy apps, and document workflows. |
 | [MuleSoft → PolyAPI](./mulesoft-to-polyapi/README.md) | Extract and redact source, analyse Mule XML and RAML, generate schemas, and guide implementation. |
 | [Boomi → PolyAPI](./boomi-to-polyapi/README.md) | Download and analyse Boomi components, derive schemas, and guide TypeScript conversion. |
 | [General engineering](./general/README.md) | Apply reusable clean-code and Markdown authoring guidance. |
@@ -38,6 +38,9 @@ when you need them. Each pack links to its skills and supporting references.
 - **Design an AI Function** — use
   [AI Functions](./polyapi-common/skills/ai-functions/SKILL.md) for typed
   contracts, tool references, and the path toward deterministic code.
+- **Expose functions to external AI clients** — use
+  [MCP servers](./polyapi-common/skills/mcp-servers/SKILL.md) to choose safe
+  tools, fix their bindings, and deploy Flow MCP server artefacts.
 - **Clean up Flow resources or inspect server-function logs** — use the
   [TypeScript](./polyapi-typescript/skills/polyapi-sdk/references/FLOW.md) or
   [Python](./polyapi-python/skills/polyapi-sdk/references/FLOW.md) Flow reference.
