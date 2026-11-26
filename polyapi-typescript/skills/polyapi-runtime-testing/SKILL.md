@@ -33,15 +33,19 @@ working platform deployment.
 
 ## Integration Test Rules
 
-Use integration tests for deployed PolyAPI behavior:
+To verify routing, use the project's existing bounded destination readback
+(`readDelivery` below). The fixture's `expectedDelivery` includes the event's
+unique marker and expected payload fields. If no readback is available, report
+only SDK acceptance and leave delivery unverified.
 
 ```typescript
 import poly from 'polyapi';
 import test from 'ava';
 
-test.serial('routeEvent deployed function accepts the deployed payload contract', async t => {
+test.serial('routeEvent delivers the expected event', async t => {
   const result = await poly.example.events.routeEvent(event, {});
   t.truthy(result);
+  t.like(await readDelivery(event), expectedDelivery);
 });
 ```
 
