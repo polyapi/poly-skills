@@ -33,48 +33,43 @@ working platform deployment.
 
 ## Integration Test Rules
 
-When a change affects an observable workflow outcome, use the project's
-existing command or runbook to drive that flow through its normal entry point.
-Assert the affected outcome. For asynchronous delivery, reuse the project's
-destination check and its timeout.
-
-Before enabling the mutation, use the project's normal checks to confirm the
-active SDK deployment and the inbox both belong to the intended test environment.
-If either target is unverified, leave the test disabled. Replace the example's
-`workflows/test.env` with the project's verified test profile.
-
-In this example the route maps an input `kind` to an output
-`type` and preserves the marker. A GET to `TEST_INBOX_URL` with a `marker`
-query parameter waits for the matching event and returns it as JSON.
-Adapt the generated callable to your project. The inbox and timeouts are examples.
+To verify routing, use the project's existing bounded destination readback
+(`readDelivery` below). The fixture's `expectedDelivery` includes the event's
+unique marker and expected payload fields. If no readback is available, report
+only SDK acceptance and leave delivery unverified.
 
 ```typescript
-import { randomUUID } from 'node:crypto';
-import test from 'ava';
 import poly from 'polyapi';
+import test from 'ava';
 
+test.serial('routeEvent delivers the expected event', async t => {
+  const result = await poly.example.events.routeEvent(event, {});
+  t.truthy(result);
+  t.like(await readDelivery(event), expectedDelivery);
+});
+```
+
+Guard production by default:
+
+```typescript
+const envPath = process.env.ENVPATH || 'workflows/dev.env';
+if (envPath.endsWith('prod.env')) {
+  throw new Error('Refusing to run integration tests against prod.env.');
+}
+```
+
+Gate external mutations:
+
+```typescript
 const RUN_MUTATING_INTEGRATION =
   process.env.RUN_MUTATING_INTEGRATION === 'true';
 
 if (RUN_MUTATING_INTEGRATION) {
-  test.serial('delivers the order event to the configured inbox', async t => {
-    t.timeout(10_000);
-    if (process.env.ENVPATH !== 'workflows/test.env') {
-      throw new Error('Refusing to route outside the configured test profile');
-    }
-    const inbox = process.env.TEST_INBOX_URL;
-    if (!inbox) throw new Error('TEST_INBOX_URL is required');
-    const marker = randomUUID();
-    const lookup = new URL(inbox);
-    lookup.searchParams.set('marker', marker);
-
-    await poly.example.events.routeEvent({ marker, kind: 'order.created' }, {});
-    const delivery = await fetch(lookup, { signal: AbortSignal.timeout(5_000) });
-    t.is(delivery.status, 200);
-    t.like(await delivery.json(), { marker, type: 'order.created' });
+  test.serial('updates the external system', async () => {
+    await poly.example.system.updateThing(input);
   });
 } else {
-  test.skip('delivers the order event to the configured inbox', async () => {});
+  test.skip('updates the external system', async () => {});
 }
 ```
 
